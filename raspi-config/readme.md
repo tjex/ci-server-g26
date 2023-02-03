@@ -13,7 +13,7 @@ Steps will assume macOS.
 2. `ngrok config {your-ngrok-authtoken}`
 3. `ngrok config edit`
 
-```json
+```
 authtoken: {your-ngrok-authtoken}
 
 tunnels:
