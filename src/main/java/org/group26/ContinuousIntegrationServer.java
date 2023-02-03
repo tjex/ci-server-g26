@@ -35,7 +35,60 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         response.getWriter().println("CI job done");
     }
- 
+    
+    /**
+     * 	Attempts to build the application.
+     * 
+     * 	@param pathToRepo Project which is going to be built.
+     */
+    public String[] build(String pathToRepo) {
+    	String[] result = new String[3];
+    	
+    	// TODO: Add remaining code
+    	
+    	result[0] = "FAILED";
+    	result[1] = "DATE";
+    	result[2] = "LOG";
+    	return result;
+    }
+    
+    /**
+     * 	Attempts to runs all tests
+     * 
+     * 	@return Array of test statuses?
+     */
+    public String[] test() {
+    	String[] result = new String[1337]; // dummy number
+    	
+    	// TODO: Add remaining code
+    	
+    	return result;
+    }
+    
+    /**
+     * 	Clones the repository into folder: ciserver-repo
+     * 
+     * 	@param repoURL HTTP URL to the GitHub repository.
+     */
+    public boolean cloneRepository(String repoURL) {
+    	String folderName = "ciserver-repo";
+    	
+    	// TODO: Add remaining code
+    	
+    	return false;
+    }
+    
+    /**
+     * 	Sends response back to Github.
+     * 
+     * 	@param message The message
+     * 	@param url URL to where (PR, commit, issue, whatever?)
+     */
+    public void sendResponse(String message, String url) {
+    	// TODO: Add remaining code
+    }
+     
+    
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {
