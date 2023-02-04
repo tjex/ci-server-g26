@@ -9,13 +9,21 @@ Steps will assume macOS.
 
 ## Setup with Ngrok
 
-1. `brew install ngrok/ngrok/ngrok`
-2. `ngrok config {your-ngrok-authtoken}`
-3. `ngrok config edit`
+1. Install ngrok 
+
+`brew install ngrok/ngrok/ngrok`
+
+2. Add your auth token (found in your profile on ngrok.com) 
+
+`ngrok config {your-ngrok-authtoken}`
+
+3. Edit the ngrok config file
+
+`ngrok config edit`
+
+Add the below code:
 
 ```
-authtoken: {your-ngrok-authtoken}
-
 tunnels:
   http_apache:
     proto: http
@@ -24,8 +32,14 @@ tunnels:
     proto: tcp
     addr: 22
 ```
-4. `cd ~ && mkdir ngrok`
+
+4. Create a folder to work in   
+
+`cd ~ && mkdir ngrok`
+
 5. We used python as a HTTP server   
+
+`cd ngrok`   
 `touch server_start.py`
 
 ```python
@@ -41,7 +55,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
     httpd.serve_forever()
 ```
 
-6. Create a bash script for running
+6. Create a bash script for running   
 
 `touch run.sh`
 
@@ -55,9 +69,10 @@ nohup /usr/bin/python3 server_start.py &
 nohup /usr/local/bin/ngrok start --all &
 ```
 7. Set permissions   
+
 `chmod u+x run.sh`
 
-8. Make an landing page
+8. Make a landing page
 `touch index.html`
 
 ```html
