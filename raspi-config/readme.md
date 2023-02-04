@@ -88,4 +88,4 @@ you should see your public http address and tcp tunnel.
 With a tcp address as such `tcp://6.tcp.eu.ngrok.io:101010`   
 the ssh login syntax is as follows:
 
-`ssh {your-pi-user}@6.tcp.eu.ngrok.io -p 15583`
+`ssh {your-pi-user}@6.tcp.eu.ngrok.io -p 101010`
