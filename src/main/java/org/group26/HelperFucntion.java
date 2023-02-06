@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 public class HelperFucntion {
-    
+
 	/**
 	 *	Reads the connection response and returns it as an JSON object.
 	 * 
@@ -16,14 +16,14 @@ public class HelperFucntion {
 	 * 	@return JSONObject with response from connection.
 	 * 	@throws IOException
 	 */
-    public static JSONObject getJsonFromConnection(HttpURLConnection conn) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputline;
-        String jsonString = "";
-        while((inputline = in.readLine()) != null){
-            jsonString += inputline + "\n";
-        }
-        JSONObject jo = new JSONObject(jsonString);
-        return jo;
-    }
+	public static JSONObject getJsonFromConnection(HttpURLConnection conn) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		String inputline;
+		String jsonString = "";
+		while((inputline = in.readLine()) != null){
+			jsonString += inputline + "\n";
+		}
+		JSONObject jo = new JSONObject(jsonString);
+		return jo;
+	}
 }
