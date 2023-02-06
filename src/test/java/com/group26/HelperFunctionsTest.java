@@ -1,27 +1,24 @@
 package com.group26;
 
 
-import org.group26.HelperFucntion;
-import org.junit.Test;
-import org.group26.ContinuousIntegrationServer;
-import org.json.JSONObject;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.group26.HelperFucntion;
+import org.json.JSONObject;
+import org.junit.Test;
 
-public class HelperFunction_test {
-    /*
-    Test if a JSONObject is created through the function getJsonFromConnection and contains appropriate repo.
-     */
+public class HelperFunctionsTest {
+    
+	/**
+	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
+	 */
     @Test
     public void getCorrectRepoFromApi()
     {
-        ContinuousIntegrationServer ser = new ContinuousIntegrationServer();
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();

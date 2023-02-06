@@ -8,14 +8,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 public class HelperFucntion {
-    /*
-    @param HTTPURLConnection conn
-    @return JSONObject jsonstring
-    Reads line by line and concatinates a string with the repo from github, which is a json object. This is then used to
-    create a JSONObject.
-     */
-    public static JSONObject getJsonFromConnection(HttpURLConnection connn) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(connn.getInputStream()));
+    
+	/**
+	 *	Reads the connection response and returns it as an JSON object.
+	 * 
+	 * 	@param conn
+	 * 	@return JSONObject with response from connection.
+	 * 	@throws IOException
+	 */
+    public static JSONObject getJsonFromConnection(HttpURLConnection conn) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String inputline;
         String jsonString = "";
         while((inputline = in.readLine()) != null){
