@@ -63,9 +63,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
             BufferedReader bufferReader = request.getReader();
             JSONObject json = HelperFucntion.getJsonFromRequestReader(bufferReader);
             //
-            String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
+            //String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
             try {
-                HelperFucntion.gitClone(branchGitURL);
+                HelperFucntion.gitClone(json);
                 System.out.println("Succesfully cloned");
             } catch (InterruptedException e) {
                 response.getWriter().println("ERROR coulden't clone");

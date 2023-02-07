@@ -41,7 +41,7 @@ public class HelperFucntion {
 		String branch = json.getString("ref");
 		String[] refs = branch.split("/");
 		branch = refs[refs.length - 1];
-		String prepURL = branch + "/" + cloningUrl;
+		String prepURL = branch + " " + cloningUrl;
 		return prepURL;
 	}
 
@@ -52,11 +52,16 @@ public class HelperFucntion {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void gitClone(String branchGitURL) throws IOException, InterruptedException {
-		String[] branchAndgitURL = branchGitURL.split("/");
-		String branch = branchAndgitURL[0];
-		String cloningURL = branchAndgitURL[1];
-		String path = "/home/g26/repo"; //--single-branch
+	public static void gitClone(JSONObject json) throws IOException, InterruptedException {
+		JSONObject repo = (JSONObject) json.get("repository");
+		String cloningURL= repo.getString("clone_url");
+
+		String branch = json.getString("ref");
+		String[] refs = branch.split("/");
+		branch = refs[refs.length - 1];
+
+		String path = "~/repo"; //--single-branch
+
 		//Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
 		Runtime.getRuntime().exec("git clone " + cloningURL + " " + path);
 	}
