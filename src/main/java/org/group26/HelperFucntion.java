@@ -36,11 +36,12 @@ public class HelperFucntion {
 	 * @return prepURL
 	 */
 	public static String getBranchAndGitURL(JSONObject json){
-		String cloningUrl = json.getString("clone_url");
+		JSONObject repo = (JSONObject) json.get("repository");
+		String cloningUrl = repo.getString("clone_url");
 		String branch = json.getString("ref");
 		String[] refs = branch.split("/");
 		branch = refs[refs.length - 1];
-		String prepURL = branch + " " + cloningUrl;
+		String prepURL = branch + "/" + cloningUrl;
 		return prepURL;
 	}
 
@@ -52,7 +53,7 @@ public class HelperFucntion {
 	 * @throws InterruptedException
 	 */
 	public static void gitClone(String branchGitURL) throws IOException, InterruptedException {
-		String[] branchAndgitURL = branchGitURL.split(" ");
+		String[] branchAndgitURL = branchGitURL.split("/");
 		String branch = branchAndgitURL[0];
 		String cloningURL = branchAndgitURL[1];
 		String path = "/home/g26/repo"; //--single-branch

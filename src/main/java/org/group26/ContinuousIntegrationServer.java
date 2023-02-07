@@ -55,7 +55,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
             }
         }
         System.out.println("testttttttttt");
-        System.out.println(request.getHeaderNames());
+        System.out.println(request.getHeaderNames().toString());
         //System.out.println(request. );
         if(pushEvent){
             response.getWriter().println("Succesfully found the webhook and about to clone");
