@@ -24,6 +24,7 @@ public class HelperFucntion {
 		while((inputline = reader.readLine()) != null){
 			jsonString += inputline + "\n";
 		}
+		System.out.println(jsonString);
 		return new JSONObject(jsonString);
 	}
 

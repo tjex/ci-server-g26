@@ -36,9 +36,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         //Setup the connection to the Repo url
         //HttpURLConnection conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();
-        HttpURLConnection conn = (HttpURLConnection) new URL("https://b314-90-143-27-220.eu.ngrok.io/").openConnection();
-        //System.out.println(request.getHeader("user-agent"));
-        conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
+        //HttpURLConnection conn = (HttpURLConnection) new URL("https://b314-90-143-27-220.eu.ngrok.io/").openConnection();
+        response.addHeader("ngrok-skip-browser-warning", "anyvalue");
+        //conn.setRequestProperty("ngrok-skip-browser-warning", "anyvalue");
+        System.out.println(request.getHeader("user-agent"));
+        //conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
 
         boolean pushEvent = false;
         if(request.getHeader("user-agent").equals("GitHub-Hookshot")){
@@ -47,6 +49,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 System.out.println("Succesfully got payload from webhook");
             }
         }
+        System.out.println(request.getHeaderNames());
+        //System.out.println(request. );
         if(pushEvent){
             //get payload from webhook
             BufferedReader bufferReader = request.getReader();
