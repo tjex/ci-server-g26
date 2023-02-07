@@ -55,13 +55,13 @@ public class HelperFucntion {
 	public static void gitClone(JSONObject json) throws IOException, InterruptedException {
 		JSONObject repo = (JSONObject) json.get("repository");
 		String cloningURL= repo.getString("clone_url");
-
+		System.out.println("cloningURL: " + cloningURL);
 		String branch = json.getString("ref");
 		String[] refs = branch.split("/");
 		branch = refs[refs.length - 1];
 
 		String path = "~/repo"; //--single-branch
-
+		System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + path);
 		//Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
 		Runtime.getRuntime().exec("git clone " + cloningURL + " " + path);
 	}
