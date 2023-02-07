@@ -41,18 +41,21 @@ public class ContinuousIntegrationServer extends AbstractHandler
         //conn.setRequestProperty("ngrok-skip-browser-warning", "anyvalue");
         //System.out.println(request.getHeader("user-agent"));
         //conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
-
+        response.getWriter().println("START OF LIFE");
         boolean pushEvent = false;
         if(request.getHeader("user-agent").equals("GitHub-Hookshot")){
+            response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
             if(request.getHeader("X-GitHub-Event").equals("push")){
                 pushEvent = true;
                 System.out.println("Succesfully got payload from webhook");
+                response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
             }
         }
         System.out.println("testttttttttt");
         System.out.println(request.getHeaderNames());
         //System.out.println(request. );
         if(pushEvent){
+            response.getWriter().println("Succesfully found the webhook and about to clone");
             //get payload from webhook
             BufferedReader bufferReader = request.getReader();
             JSONObject json = HelperFucntion.getJsonFromRequestReader(bufferReader);
@@ -62,6 +65,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 HelperFucntion.gitClone(branchGitURL);
                 System.out.println("Succesfully cloned");
             } catch (InterruptedException e) {
+                response.getWriter().println("ERROR coulden't clone");
                 throw new RuntimeException(e);
             }
         }
@@ -83,8 +87,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
         */
+        response.getWriter().println("end of function");
+
         response.getWriter().println("CI job done");
     }
 
