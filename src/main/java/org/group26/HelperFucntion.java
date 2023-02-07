@@ -56,6 +56,7 @@ public class HelperFucntion {
 		String branch = branchAndgitURL[0];
 		String cloningURL = branchAndgitURL[1];
 		String path = "/home/g26/repo"; //--single-branch
-		Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
+		//Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
+		Runtime.getRuntime().exec("git clone " + cloningURL + " " + path);
 	}
 }
