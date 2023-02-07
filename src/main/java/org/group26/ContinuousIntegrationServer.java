@@ -42,6 +42,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         //System.out.println(request.getHeader("user-agent"));
         //conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
         response.getWriter().println("START OF LIFE");
+        response.getWriter().println(request.getHeader("User-Agent"));
+        System.out.println(request.getHeader("User-Agent"));
         boolean pushEvent = false;
         String[] connecter = request.getHeader("User-Agent").split("/");
         if(connecter[0].equals("GitHub-Hookshot")){
