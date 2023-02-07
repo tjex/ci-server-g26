@@ -60,9 +60,9 @@ public class HelperFucntion {
 		String[] refs = branch.split("/");
 		branch = refs[refs.length - 1];
 
-		String path = "~/repo"; //--single-branch
+		String path = "repo"; //--single-branch
 		System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + path);
 		//Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
-		Runtime.getRuntime().exec("git clone " + cloningURL + " " + path);
+		Runtime.getRuntime().exec("cd && git clone " + cloningURL + " " + path);
 	}
 }
