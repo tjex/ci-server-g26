@@ -39,7 +39,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         //HttpURLConnection conn = (HttpURLConnection) new URL("https://b314-90-143-27-220.eu.ngrok.io/").openConnection();
         response.addHeader("ngrok-skip-browser-warning", "anyvalue");
         //conn.setRequestProperty("ngrok-skip-browser-warning", "anyvalue");
-        System.out.println(request.getHeader("user-agent"));
+        //System.out.println(request.getHeader("user-agent"));
         //conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
 
         boolean pushEvent = false;
