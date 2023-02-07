@@ -22,7 +22,7 @@ import org.json.JSONObject;
  */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
-    public JSONObject json;
+    public static final String PATH = "/home/g26/repo/";
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -34,63 +34,55 @@ public class ContinuousIntegrationServer extends AbstractHandler
         baseRequest.setHandled(true);
 
 
-        //Setup the connection to the Repo url
-        //HttpURLConnection conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();
-        //HttpURLConnection conn = (HttpURLConnection) new URL("https://b314-90-143-27-220.eu.ngrok.io/").openConnection();
+
         response.addHeader("ngrok-skip-browser-warning", "anyvalue");
-        //conn.setRequestProperty("ngrok-skip-browser-warning", "anyvalue");
-        //System.out.println(request.getHeader("user-agent"));
-        //conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
+
         response.getWriter().println("START OF LIFE");
         response.getWriter().println(request.getHeader("User-Agent"));
         System.out.println(request.getHeader("User-Agent"));
 
         boolean pushEvent = false;
         if(request.getHeader("User-Agent").contains("GitHub-Hookshot")){
-            response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
+            //response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
             if(request.getHeader("X-GitHub-Event").equals("push")){
                 pushEvent = true;
-                System.out.println("Succesfully got payload from webhook");
+                //System.out.println("Succesfully got payload from webhook");
                 response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
             }
         }
-        System.out.println("testttttttttt");
+
         System.out.println(request.getHeaderNames().toString());
-        //System.out.println(request. );
+
         if(pushEvent){
             response.getWriter().println("Succesfully found the webhook and about to clone");
             //get payload from webhook
             BufferedReader bufferReader = request.getReader();
             JSONObject json = HelperFucntion.getJsonFromRequestReader(bufferReader);
-            //
-            //String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
+            //Gets the relevant info from json file such as clone url and branch
+            JSONObject repo = (JSONObject) json.get("repository");
+            String cloningURL= repo.getString("clone_url");
+            System.out.println("cloningURL: " + cloningURL);
+            String branch = json.getString("ref");
+            String[] refs = branch.split("/");
+            branch = refs[refs.length - 1];
+            //Clones the repo if possible
             try {
-                HelperFucntion.gitClone(json);
+                HelperFucntion.gitClone(cloningURL, branch);
                 System.out.println("Succesfully cloned");
             } catch (InterruptedException e) {
-                response.getWriter().println("ERROR coulden't clone");
+                //response.getWriter().println("ERROR coulden't clone");
                 throw new RuntimeException(e);
             }
         }
-        //System.out.println(jsonString);
-        //prints when connecting to localhost
+
         System.out.println(target);
-        //System.out.println(json);
-        //response.getWriter().println(json);
+
 
         // here you do all the continuous integration tasks
         // for example
         // 1st clone your repository
         // 2nd compile the code
-        /*
-        //String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
-        try {
-            HelperFucntion.gitClone(branchGitURL);
-            System.out.println("kebab");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        */
+
         response.getWriter().println("end of function");
 
         response.getWriter().println("CI job done");
