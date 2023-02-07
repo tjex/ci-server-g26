@@ -35,19 +35,51 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 
         //Setup the connection to the Repo url
-        HttpURLConnection conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();
+        //HttpURLConnection conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();
+        HttpURLConnection conn = (HttpURLConnection) new URL("https://b314-90-143-27-220.eu.ngrok.io/").openConnection();
+        //System.out.println(request.getHeader("user-agent"));
         conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
 
-        JSONObject json = HelperFucntion.getJsonFromConnection(conn);
+        boolean pushEvent = false;
+        if(request.getHeader("user-agent").equals("GitHub-Hookshot")){
+            if(request.getHeader("X-GitHub-Event").equals("push")){
+                pushEvent = true;
+                System.out.println("Succesfully got payload from webhook");
+            }
+        }
+        if(pushEvent){
+            //get payload from webhook
+            BufferedReader bufferReader = request.getReader();
+            JSONObject json = HelperFucntion.getJsonFromRequestReader(bufferReader);
+            //
+            String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
+            try {
+                HelperFucntion.gitClone(branchGitURL);
+                System.out.println("Succesfully cloned");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        //System.out.println(jsonString);
         //prints when connecting to localhost
         System.out.println(target);
-        response.getWriter().println(json);
+        //System.out.println(json);
+        //response.getWriter().println(json);
 
         // here you do all the continuous integration tasks
         // for example
         // 1st clone your repository
         // 2nd compile the code
+        /*
+        //String branchGitURL = HelperFucntion.getBranchAndGitURL(json);
+        try {
+            HelperFucntion.gitClone(branchGitURL);
+            System.out.println("kebab");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
+        */
         response.getWriter().println("CI job done");
     }
 
