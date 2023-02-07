@@ -44,9 +44,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.getWriter().println("START OF LIFE");
         response.getWriter().println(request.getHeader("User-Agent"));
         System.out.println(request.getHeader("User-Agent"));
+
         boolean pushEvent = false;
-        String[] connecter = request.getHeader("User-Agent").split("/");
-        if(connecter[0].equals("GitHub-Hookshot")){
+        if(request.getHeader("User-Agent").contains("GitHub-Hookshot")){
             response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
             if(request.getHeader("X-GitHub-Event").equals("push")){
                 pushEvent = true;
