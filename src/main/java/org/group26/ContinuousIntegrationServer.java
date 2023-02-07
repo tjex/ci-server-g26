@@ -38,6 +38,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         HttpURLConnection conn = (HttpURLConnection) new URL("https://api.github.com/repos/tjex/ci-server-g26").openConnection();
         conn.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
 
+        conn.setRequestProperty("ngrok-skip-browser-warning", "anyvalue");
         JSONObject json = HelperFucntion.getJsonFromConnection(conn);
         //prints when connecting to localhost
         System.out.println(target);
