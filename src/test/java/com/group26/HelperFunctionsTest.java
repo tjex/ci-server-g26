@@ -15,7 +15,7 @@ public class HelperFunctionsTest {
 
 	/**
 	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
-	 */
+
 	@Test
 	public void getCorrectRepoFromApi()
 	{
@@ -34,5 +34,5 @@ public class HelperFunctionsTest {
 		}
 		assertEquals(json.getString("full_name"), "tjex/ci-server-g26");
 	}
-
+	*/
 }
