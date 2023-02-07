@@ -49,6 +49,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
                 System.out.println("Succesfully got payload from webhook");
             }
         }
+        System.out.println("testttttttttt");
         System.out.println(request.getHeaderNames());
         //System.out.println(request. );
         if(pushEvent){
