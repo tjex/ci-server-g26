@@ -1,5 +1,6 @@
 package com.group26;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.group26.ContinuousIntegrationServer;
@@ -26,7 +28,7 @@ public class HelperFunctionsTest {
 	@Test
 	public void CheckCorrectJsonReader() throws IOException {
 		String dummyTest = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-		File file = new File("temp.txt");
+		File file = new File( ContinuousIntegrationServer.PATH + "temp.txt/");
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
@@ -46,7 +48,7 @@ public class HelperFunctionsTest {
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
-		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+		File file = new File(PATH + "ci-server-g26/");
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
