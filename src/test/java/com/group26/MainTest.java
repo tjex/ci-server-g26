@@ -111,7 +111,8 @@ public class MainTest
 
         // checking out a commit that passes all text
         try{
-            Process proc = Runtime.getRuntime().exec("cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            Process proc = processBuilder.start();
             proc.waitFor();
         }
         catch (IOException | InterruptedException e) {
