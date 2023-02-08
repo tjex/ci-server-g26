@@ -148,7 +148,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		String token = System.getenv("CI_TOKEN");
 		
-		response.setHeader("Authorization", token);
+		response.setHeader("Authorization", "Bearer " + token);
 		response.setHeader("Content-type", "application/json");
 		response.setHeader("Accept", "application/vnd.github.v3+json");
 		response.setStatus(HttpServletResponse.SC_OK);
