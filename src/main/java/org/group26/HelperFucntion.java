@@ -36,8 +36,7 @@ public class HelperFucntion {
 	 */
 	public static void gitClone(String cloningURL, String branch) throws IOException, InterruptedException {
 		System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-		//Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
-		//Runtime.getRuntime().exec("git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-		Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + ContinuousIntegrationServer.PATH);
+		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + ContinuousIntegrationServer.PATH);
+		pro.waitFor();
 	}
 }
