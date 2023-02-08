@@ -28,7 +28,8 @@ public class HelperFunctionsTest {
 	@Test
 	public void CheckCorrectJsonReader() throws IOException {
 		String dummyTest = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-		File file = new File("/home/g26/temp.txt/");
+		File file = new File("/home/g26/temp.txt");
+		System.out.println(file.createNewFile());
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
