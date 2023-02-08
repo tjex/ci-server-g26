@@ -3,6 +3,8 @@ package com.group26;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+//
+// import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.group26.ContinuousIntegrationServer;
 import org.group26.HelperFucntion;
 import org.json.JSONObject;
@@ -44,9 +47,14 @@ public class HelperFunctionsTest {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
 		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+		}
 		assertFalse(file.isDirectory());
 		HelperFucntion.gitClone(URL, branch);
 		assertTrue(file.isDirectory());
-		file.delete();
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+		}
 	}
 }
