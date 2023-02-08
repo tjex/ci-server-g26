@@ -54,13 +54,12 @@ public class MainTest
 
         ContinuousIntegrationServer server = new ContinuousIntegrationServer();
         try {
-            HelperFucntion.gitCloneWithOutputDir("git@github.com:tjex/ci-server-g26.git", "main", path);
+            HelperFucntion.gitCloneWithOutputDir("https://github.com/tjex/ci-server-g26.git", "main", path);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
 
-        System.out.println("cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
         try{
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
             Process proc = processBuilder.start();
@@ -102,7 +101,7 @@ public class MainTest
         System.out.println(path);
         ContinuousIntegrationServer server = new ContinuousIntegrationServer();
         try {
-            HelperFucntion.gitCloneWithOutputDir("git@github.com:tjex/ci-server-g26.git", "main", path);
+            HelperFucntion.gitCloneWithOutputDir("https://github.com/tjex/ci-server-g26.git", "main", path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
