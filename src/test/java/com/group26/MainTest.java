@@ -44,7 +44,7 @@ public class MainTest
      * The specific commit 6cbdd6e14ead3ede622a40095e56634cdad8d9e4 has been tested manually
      */
     public void testBuildSuccess() {
-        String path = ContinuousIntegrationServer.PATH + "ci-server-g26/test_build_success/";
+        String path = ContinuousIntegrationServer.PATH + "testing/test_build_success/";
         File dir = new File(path);
         try {
             FileUtils.deleteDirectory(dir);
@@ -81,7 +81,7 @@ public class MainTest
      * the project should not be able to build
      */
     public void testBuildFail() {
-        String path = ContinuousIntegrationServer.PATH + "ci-server-g26/test_build_fail/";
+        String path = ContinuousIntegrationServer.PATH + "testing/test_build_fail/";
         System.out.println("directory to be deleted " + path);
         File dir = new File(path);
         try {
