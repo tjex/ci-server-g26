@@ -7,6 +7,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -67,7 +72,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		System.out.println(target);
 
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		sendResponse(response, CommitStatus.SUCCESS, commitURL);
+		sendResponse(CommitStatus.SUCCESS, commitURL);
 
 		// here you do all the continuous integration tasks
 		// for example
@@ -142,31 +147,38 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(HttpServletResponse response, CommitStatus status, String commitUrl) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
 		String token = System.getenv("CI_TOKEN");
 		
+		// Get commit id from URL
+		String[] split = commitUrl.split("/");
+		String commitId = split[split.length - 1]; 
+		
+		CloseableHttpClient client = HttpClientBuilder.create().build();
+
+		// https://api.github.com/repos/
+		// HttpPost response = new HttpPost(commitUrl);
+		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/" + commitId);
 		response.setHeader("Authorization", "Bearer " + token);
 		response.setHeader("Content-type", "application/json");
 		response.setHeader("Accept", "application/vnd.github.v3+json");
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.addHeader("ngrok-skip-browser-warning", "anyvalue");
-		
-		// Get commit id from URL
-		String[] split = commitUrl.split("/");
-		String commitId = split[split.length - 1];
-		
+
 		JSONObject body = new JSONObject();
 		body.put("owner", "tjex");
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
-		
-		response.getWriter().print(body.toString());
+		StringEntity params = new StringEntity(body.toString());
+		response.setEntity(params);
+
 		System.out.println("Response payload:");
 		System.out.println(body.toString());
+		
+		// Send POST to GitHub	
+		client.execute(response);
 	}
 
 	// used to start the CI server in command line
