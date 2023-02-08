@@ -71,8 +71,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		System.out.println(target);
 
-		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		sendResponse(CommitStatus.SUCCESS, commitURL);
+		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
+		// sendResponse(CommitStatus.SUCCESS, commitURL);
 
 		// here you do all the continuous integration tasks
 		// for example
