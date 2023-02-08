@@ -50,10 +50,11 @@ public class HelperFunctionsTest {
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
-
 		assertFalse(file.isDirectory());
 		HelperFucntion.gitClone(URL, branch);
 		assertTrue(file.isDirectory());
-		file.delete();
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+		}
 	}
 }
