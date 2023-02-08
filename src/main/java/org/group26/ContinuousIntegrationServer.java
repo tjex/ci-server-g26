@@ -159,9 +159,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		CloseableHttpClient client = HttpClientBuilder.create().build();
 
-		// https://api.github.com/repos/
-		// HttpPost response = new HttpPost(commitUrl);
-		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/" + commitId);
+		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/statuses/" + commitId);
 		response.setHeader("Authorization", "Bearer " + token);
 		response.setHeader("Content-type", "application/json");
 		response.setHeader("Accept", "application/vnd.github.v3+json");
