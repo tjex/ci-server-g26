@@ -35,12 +35,14 @@ public class HelperFunctionsTest {
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
-		BufferedReader br = new BufferedReader(new FileReader("temp.txt"));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		JSONObject json = HelperFucntion.getJsonFromRequestReader(br);
 		assertEquals(json.getString("fruit"), "Apple");
 		assertEquals(json.getString("size"), "Large");
 		assertEquals(json.getString("color"), "Red");
-		file.delete();
+		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
+		pro.waitFor();
+		System.out.println("check if possible to print after assert");
 	}
 
 	/**
