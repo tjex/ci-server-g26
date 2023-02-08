@@ -8,10 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -38,13 +34,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			HttpServletResponse response)
 					throws IOException, ServletException
 	{
-		response.setContentType("text/html;charset=utf-8");
-		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
-		response.addHeader("ngrok-skip-browser-warning", "anyvalue");
-
-		response.getWriter().println("START OF LIFE");
-		response.getWriter().println(request.getHeader("User-Agent"));
+		
+		// response.getWriter().println("START OF LIFE");
+		// response.getWriter().println(request.getHeader("User-Agent"));
 		System.out.println(request.getHeader("User-Agent"));
 
 		boolean pushEvent = false;
@@ -53,7 +46,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			if(request.getHeader("X-GitHub-Event").equals("push")){
 				pushEvent = true;
 				//System.out.println("Succesfully got payload from webhook");
-				response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
+				// response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
 			}
 		}
 
@@ -63,7 +56,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
 		
 		if(pushEvent) {
-			response.getWriter().println("Succesfully found the webhook and about to clone");
+			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
 			try {
 				status = cloneRepository(requestJson);
@@ -75,16 +68,16 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		System.out.println(target);
 
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		sendResponse(CommitStatus.SUCCESS, commitURL);
+		sendResponse(response, CommitStatus.SUCCESS, commitURL);
 
 		// here you do all the continuous integration tasks
 		// for example
 		// 1st clone your repository
 		// 2nd compile the code
 
-		response.getWriter().println("end of function");
+		// response.getWriter().println("end of function");
 
-		response.getWriter().println("CI job done");
+		// response.getWriter().println("CI job done");
 	}
 	
 	/**
@@ -142,6 +135,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	/**
 	 * 	Sends response back to GitHub.
 	 *
+	 *	@param response
 	 * 	@param status Commit status (error, failure, pending, success)
 	 * 	@param commitUrl The pushed commit URL
 	 * 	@throws IOException 
@@ -149,30 +143,28 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl) throws ClientProtocolException, IOException {
+	public void sendResponse(HttpServletResponse response, CommitStatus status, String commitUrl) throws ClientProtocolException, IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
+		
+		response.setHeader("Content-type", "application/json");
+		response.setHeader("Accept", "application/vnd.github.v3+json");
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.addHeader("ngrok-skip-browser-warning", "anyvalue");
 		
 		// Get commit id from URL
 		String[] split = commitUrl.split("/");
 		String commitId = split[split.length - 1];
-		
-		CloseableHttpClient client = HttpClientBuilder.create().build();
-		
-		HttpPost response = new HttpPost(commitUrl);
-		response.setHeader("Content-type", "application/json");
-		response.setHeader("Accept", "application/vnd.github.v3+json");
 		
 		JSONObject body = new JSONObject();
 		body.put("owner", "tjex");
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
-		StringEntity params = new StringEntity(body.toString());
-		response.setEntity(params);
 		
-		// Send POST to GitHub commit URL	
-		client.execute(response);
+		response.getWriter().print(body.toString());
+		System.out.println("Response payload:");
+		System.out.println(body.toString());
 	}
 
 	// used to start the CI server in command line
