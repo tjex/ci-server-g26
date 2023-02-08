@@ -44,7 +44,7 @@ public class MainTest
      * The specific commit ae7050c32e33393f58117d78810eed725549597c has been tested manually
      */
     public void testBuildSuccess() {
-        String path = ContinuousIntegrationServer.PATH + "test_build_success/";
+        String path = ContinuousIntegrationServer.PATH + "ci-server-g26/test_build_success/";
         File dir = new File(path);
         try {
             FileUtils.deleteDirectory(dir);
@@ -77,6 +77,12 @@ public class MainTest
         }
 
         assertEquals("SUCCESS", result[0]);
+
+        try {
+            FileUtils.deleteDirectory(dir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -85,7 +91,7 @@ public class MainTest
      * the project should not be able to build
      */
     public void testBuildFail() {
-        String path = ContinuousIntegrationServer.PATH + "test_build_fail/";
+        String path = ContinuousIntegrationServer.PATH + "ci-server-g26/test_build_fail/";
         System.out.println("directory to be deleted " + path);
         File dir = new File(path);
         try {
@@ -123,5 +129,12 @@ public class MainTest
 
         String[] result = server.build(path);
         assertEquals("FAILED", result[0]);
+
+        try {
+            FileUtils.deleteDirectory(dir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
