@@ -7,6 +7,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -19,6 +24,14 @@ import org.json.JSONObject;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
+	
+	private enum CommitStatus {
+		ERROR,
+		FAILURE,
+		PENDING,
+		SUCCESS
+	}
+	
 	public void handle(String target,
 			Request baseRequest,
 			HttpServletRequest request,
@@ -61,6 +74,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		System.out.println(target);
 
+		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
+		sendResponse(CommitStatus.SUCCESS, commitURL);
 
 		// here you do all the continuous integration tasks
 		// for example
@@ -125,15 +140,40 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	}
 
 	/**
-	 * 	Sends response back to Github.
+	 * 	Sends response back to GitHub.
 	 *
-	 * 	@param message The message
-	 * 	@param url URL to where (PR, commit, issue, whatever?)
+	 * 	@param status Commit status (error, failure, pending, success)
+	 * 	@param commitUrl The pushed commit URL
+	 * 	@throws IOException 
+	 * 	@throws ClientProtocolException
+	 * 
+	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(String message, String url) {
-		// TODO: Add remaining code
+	public void sendResponse(CommitStatus status, String commitUrl) throws ClientProtocolException, IOException {
+		
+		System.out.println("Sending response to commit url: " + commitUrl);
+		
+		// Get commit id from URL
+		String[] split = commitUrl.split("/");
+		String commitId = split[split.length - 1];
+		
+		CloseableHttpClient client = HttpClientBuilder.create().build();
+		
+		HttpPost response = new HttpPost(commitUrl);
+		response.setHeader("Content-type", "application/json");
+		response.setHeader("Accept", "application/vnd.github.v3+json");
+		
+		JSONObject body = new JSONObject();
+		body.put("owner", "tjex");
+		body.put("repo", "ci-server-g26");
+		body.put("sha", commitId);
+		body.put("state", status.toString().toLowerCase());
+		StringEntity params = new StringEntity(body.toString());
+		response.setEntity(params);
+		
+		// Send POST to GitHub commit URL	
+		client.execute(response);
 	}
-
 
 	// used to start the CI server in command line
 	public static void main(String[] args) throws Exception
