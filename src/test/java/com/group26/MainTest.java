@@ -71,10 +71,6 @@ public class MainTest
 
 
         String[] result = server.build(path);
-        if(result[0]!= "SUCCESS"){
-            System.out.println(result[2]);
-        }
-
         assertEquals("SUCCESS", result[0]);
 
         try {
