@@ -31,7 +31,6 @@ public class HelperFunctionsTest {
 		Process pro = Runtime.getRuntime().exec("touch /home/g26/temp.txt");
 		pro.waitFor();
 		File file = new File("/home/g26/temp.txt");
-		System.out.println(file.createNewFile());
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
@@ -42,7 +41,6 @@ public class HelperFunctionsTest {
 		assertEquals(json.getString("color"), "Red");
 		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
 		pro.waitFor();
-		System.out.println("check if possible to print after assert");
 	}
 
 	/**
