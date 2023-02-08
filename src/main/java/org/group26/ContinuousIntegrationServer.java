@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -143,10 +142,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(HttpServletResponse response, CommitStatus status, String commitUrl) throws ClientProtocolException, IOException {
+	public void sendResponse(HttpServletResponse response, CommitStatus status, String commitUrl) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
+		String token = System.getenv("CI_TOKEN");
+		
+		response.setHeader("Authorization", token);
 		response.setHeader("Content-type", "application/json");
 		response.setHeader("Accept", "application/vnd.github.v3+json");
 		response.setStatus(HttpServletResponse.SC_OK);
