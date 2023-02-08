@@ -120,13 +120,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
     public String[] build(String pathToRepo) {
         LocalDateTime time = LocalDateTime.now();
         System.out.println(time.toString());
-    	String[] result = new String[]{"SUCCESS",time.toString(),""}; // BUILD STATUS, TIME, LOG
+    	String[] result = new String[]{"NONE",time.toString(),""}; // BUILD STATUS, TIME, LOG
 
         try {
             Verifier verifier = new Verifier(pathToRepo);
             verifier.addCliArgument( "install" );
             verifier.execute();
             verifier.verify(true);
+            result[0] = "SUCCESS";
 
         } catch (VerificationException e) {
             result[0] = "FAILED";

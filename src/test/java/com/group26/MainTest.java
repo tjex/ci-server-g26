@@ -40,8 +40,8 @@ public class MainTest
     }
 
     /**
-     * Tests if the latest commit on main is built successful
-     * All commits on main should be able to build as well as pass all tests
+     * Tests if a working commit on main is built successful
+     * The specific commit ae7050c32e33393f58117d78810eed725549597c has been tested manually
      */
     public void testBuildSuccess() {
         String path = ContinuousIntegrationServer.PATH + "test_build_success/";
@@ -58,7 +58,24 @@ public class MainTest
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+
+        System.out.println("cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+        try{
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            Process proc = processBuilder.start();
+            proc.waitFor();
+        }
+        catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
         String[] result = server.build(path);
+        if(result[0]!= "SUCCESS"){
+            System.out.println(result[2]);
+        }
+
         assertEquals("SUCCESS", result[0]);
     }
 
@@ -68,8 +85,8 @@ public class MainTest
      * the project should not be able to build
      */
     public void testBuildFail() {
-        String path = ContinuousIntegrationServer.PATH + "test_build_fail";
-        System.out.println("file to be deletd " + path);
+        String path = ContinuousIntegrationServer.PATH + "test_build_fail/";
+        System.out.println("directory to be deleted " + path);
         File dir = new File(path);
         try {
             FileUtils.deleteDirectory(dir);
@@ -86,13 +103,22 @@ public class MainTest
             throw new RuntimeException(e);
         }
 
+        // checking out a commit that passes all text
+        try{
+            Process proc = Runtime.getRuntime().exec("cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            proc.waitFor();
+        }
+        catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         // Deleting the file that contains the function that's called in this function should give build error
-        File file = new File(path + "/src/main/java/org/group26/ContinuousIntegrationServer.java");
-        System.out.println(path + "/src/main/java/org/group26/ContinuousIntegrationServer.java");
+        File file = new File(path + "src/main/java/org/group26/HelperFucntion.java");
+        System.out.println(path + "src/main/java/org/group26/HelperFucntion.java");
         Boolean is_deleted = file.delete();
 
         if (!is_deleted) {
-            throw new RuntimeException("failed to deleted file: " + file.getName());
+            throw new RuntimeException("failed to delete file: " + file.getName());
         }
 
         String[] result = server.build(path);
