@@ -28,7 +28,7 @@ public class HelperFunctionsTest {
 	@Test
 	public void CheckCorrectJsonReader() throws IOException {
 		String dummyTest = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-		File file = new File(ContinuousIntegrationServer.PATH + "temp.txt/");
+		File file = new File("/home/g26/temp.txt/");
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
@@ -48,7 +48,7 @@ public class HelperFunctionsTest {
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
-		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+		File file = new File(ContinuousIntegrationServer.PATH);
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
