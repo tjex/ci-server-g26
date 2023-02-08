@@ -1,5 +1,6 @@
 package com.group26;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.group26.ContinuousIntegrationServer;
@@ -24,18 +26,21 @@ public class HelperFunctionsTest {
 	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
 	 */
 	@Test
-	public void CheckCorrectJsonReader() throws IOException {
+	public void CheckCorrectJsonReader() throws IOException, InterruptedException {
 		String dummyTest = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-		File file = new File("temp.txt");
+		Process pro = Runtime.getRuntime().exec("touch /home/g26/temp.txt");
+		pro.waitFor();
+		File file = new File("/home/g26/temp.txt");
 		FileWriter myWriter = new FileWriter(file);
 		myWriter.write(dummyTest);
 		myWriter.close();
-		BufferedReader br = new BufferedReader(new FileReader("temp.txt"));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		JSONObject json = HelperFucntion.getJsonFromRequestReader(br);
 		assertEquals(json.getString("fruit"), "Apple");
 		assertEquals(json.getString("size"), "Large");
 		assertEquals(json.getString("color"), "Red");
-		file.delete();
+		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
+		pro.waitFor();
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class HelperFunctionsTest {
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
-		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+		File file = new File(ContinuousIntegrationServer.PATH);
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
