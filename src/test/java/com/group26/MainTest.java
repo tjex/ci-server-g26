@@ -73,12 +73,6 @@ public class MainTest
         String[] result = server.build(path);
         System.out.println(result[2]);
         assertEquals("SUCCESS", result[0]);
-
-        try {
-            FileUtils.deleteDirectory(dir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -126,12 +120,6 @@ public class MainTest
 
         String[] result = server.build(path);
         assertEquals("FAILED", result[0]);
-
-        try {
-            FileUtils.deleteDirectory(dir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 }
