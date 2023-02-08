@@ -1,14 +1,11 @@
 package org.group26;
 
 
-import org.eclipse.jetty.server.Request;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.util.Arrays;
+
+import org.json.JSONObject;
+
 public class HelperFucntion {
 
 	/**
@@ -31,6 +28,7 @@ public class HelperFucntion {
 	/**
 	 * Takes in a String which comes from getBranchAndGitURL and formats it into a command. This command is then executed
 	 * through Runtime.getRuntime() to clone the repo from webhook branch. Stored at path on the raspberry pi.
+	 * 
 	 * @param cloningURL
 	 * @param branch
 	 * @throws IOException

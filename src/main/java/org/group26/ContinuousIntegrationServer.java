@@ -1,18 +1,14 @@
 package org.group26;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
 
@@ -22,131 +18,129 @@ import org.json.JSONObject;
  */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
-    public static final String PATH = "/home/g26/repo/";
-    public void handle(String target,
-                       Request baseRequest,
-                       HttpServletRequest request,
-                       HttpServletResponse response)
-            throws IOException, ServletException
-    {
-        response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
+	public static final String PATH = "/home/g26/repo/";
+	public void handle(String target,
+			Request baseRequest,
+			HttpServletRequest request,
+			HttpServletResponse response)
+					throws IOException, ServletException
+	{
+		response.setContentType("text/html;charset=utf-8");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		response.addHeader("ngrok-skip-browser-warning", "anyvalue");
+
+		response.getWriter().println("START OF LIFE");
+		response.getWriter().println(request.getHeader("User-Agent"));
+		System.out.println(request.getHeader("User-Agent"));
+
+		boolean pushEvent = false;
+		if(request.getHeader("User-Agent").contains("GitHub-Hookshot")){
+			//response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
+			if(request.getHeader("X-GitHub-Event").equals("push")){
+				pushEvent = true;
+				//System.out.println("Succesfully got payload from webhook");
+				response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
+			}
+		}
+
+		System.out.println(request.getHeaderNames().toString());
+
+		// Get payload as JSON
+		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
+		
+		if(pushEvent) {
+			response.getWriter().println("Succesfully found the webhook and about to clone");
+			boolean status;
+			try {
+				status = cloneRepository(requestJson);
+				if (status)
+					System.out.println("Successfully cloned repository");
+			} catch (Exception e) { e.printStackTrace(); }
+		}
+
+		System.out.println(target);
 
 
+		// here you do all the continuous integration tasks
+		// for example
+		// 1st clone your repository
+		// 2nd compile the code
 
-        response.addHeader("ngrok-skip-browser-warning", "anyvalue");
+		response.getWriter().println("end of function");
 
-        response.getWriter().println("START OF LIFE");
-        response.getWriter().println(request.getHeader("User-Agent"));
-        System.out.println(request.getHeader("User-Agent"));
+		response.getWriter().println("CI job done");
+	}
+	
+	/**
+	 * 	Attempts to build the application.
+	 *
+	 * 	@param pathToRepo Project which is going to be built.
+	 */
+	public String[] build(String pathToRepo) {
+		String[] result = new String[3];
 
-        boolean pushEvent = false;
-        if(request.getHeader("User-Agent").contains("GitHub-Hookshot")){
-            //response.getWriter().println("RECOGNISING THE USER IS FROM GITHUB");
-            if(request.getHeader("X-GitHub-Event").equals("push")){
-                pushEvent = true;
-                //System.out.println("Succesfully got payload from webhook");
-                response.getWriter().println("WEBHOOK WENT THROUGH ALL THE if statements");
-            }
-        }
+		// TODO: Add remaining code
 
-        System.out.println(request.getHeaderNames().toString());
+		result[0] = "FAILED";
+		result[1] = "DATE";
+		result[2] = "LOG";
+		return result;
+	}
 
-        if(pushEvent){
-            response.getWriter().println("Succesfully found the webhook and about to clone");
-            //get payload from webhook
-            BufferedReader bufferReader = request.getReader();
-            JSONObject json = HelperFucntion.getJsonFromRequestReader(bufferReader);
-            //Gets the relevant info from json file such as clone url and branch
-            JSONObject repo = (JSONObject) json.get("repository");
-            String cloningURL= repo.getString("clone_url");
-            System.out.println("cloningURL: " + cloningURL);
-            String branch = json.getString("ref");
-            String[] refs = branch.split("/");
-            branch = refs[refs.length - 1];
-            //Clones the repo if possible
-            try {
-                HelperFucntion.gitClone(cloningURL, branch);
-                System.out.println("Succesfully cloned");
-            } catch (InterruptedException e) {
-                //response.getWriter().println("ERROR coulden't clone");
-                throw new RuntimeException(e);
-            }
-        }
+	/**
+	 * 	Attempts to runs all tests
+	 *
+	 * 	@return Array of test statuses?
+	 */
+	public String[] test() {
+		String[] result = new String[1337]; // dummy number
 
-        System.out.println(target);
+		// TODO: Add remaining code
 
+		return result;
+	}
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
+	/**
+	 * 	Clones the repository into folder: {@code ContinuousIntegrationServer.PATH}/ci-server-g26/
+	 *
+	 * 	@param payload JSON payload from GitHub web hook
+	 * 	@throws IOException If an I/O error occurs 
+	 * 	@throws InterruptedException 
+	 */
+	public boolean cloneRepository(JSONObject payload) throws IOException, InterruptedException {
+		// Gets the relevant info from json file such as clone url and branch
+		JSONObject repo = (JSONObject) payload.get("repository");
+		String cloningURL= repo.getString("clone_url");
+		System.out.println("cloningURL: " + cloningURL);
+		String branch = payload.getString("ref");
+		String[] refs = branch.split("/");
+		branch = refs[refs.length - 1];
+		
+		HelperFucntion.gitClone(cloningURL, branch);
+		
+		// Returns true if repository was successfully cloned
+		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+		return file.isDirectory();
+	}
 
-        response.getWriter().println("end of function");
-
-        response.getWriter().println("CI job done");
-    }
-
-    /**
-     * 	Attempts to build the application.
-     *
-     * 	@param pathToRepo Project which is going to be built.
-     */
-    public String[] build(String pathToRepo) {
-        String[] result = new String[3];
-
-        // TODO: Add remaining code
-
-        result[0] = "FAILED";
-        result[1] = "DATE";
-        result[2] = "LOG";
-        return result;
-    }
-
-    /**
-     * 	Attempts to runs all tests
-     *
-     * 	@return Array of test statuses?
-     */
-    public String[] test() {
-        String[] result = new String[1337]; // dummy number
-
-        // TODO: Add remaining code
-
-        return result;
-    }
-
-    /**
-     * 	Clones the repository into folder: ciserver-repo
-     *
-     * 	@param repoURL HTTP URL to the GitHub repository.
-     */
-    public boolean cloneRepository(String repoURL) {
-        String folderName = "ciserver-repo";
-
-        // TODO: Add remaining code
-
-        return false;
-    }
-
-    /**
-     * 	Sends response back to Github.
-     *
-     * 	@param message The message
-     * 	@param url URL to where (PR, commit, issue, whatever?)
-     */
-    public void sendResponse(String message, String url) {
-        // TODO: Add remaining code
-    }
+	/**
+	 * 	Sends response back to Github.
+	 *
+	 * 	@param message The message
+	 * 	@param url URL to where (PR, commit, issue, whatever?)
+	 */
+	public void sendResponse(String message, String url) {
+		// TODO: Add remaining code
+	}
 
 
-    // used to start the CI server in command line
-    public static void main(String[] args) throws Exception
-    {
-        Server server = new Server(8026);
-        server.setHandler(new ContinuousIntegrationServer());
-        server.start();
-        server.join();
-    }
+	// used to start the CI server in command line
+	public static void main(String[] args) throws Exception
+	{
+		Server server = new Server(8026);
+		server.setHandler(new ContinuousIntegrationServer());
+		server.start();
+		server.join();
+	}
 }
