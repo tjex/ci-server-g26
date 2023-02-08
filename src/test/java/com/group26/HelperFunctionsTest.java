@@ -26,8 +26,10 @@ public class HelperFunctionsTest {
 	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
 	 */
 	@Test
-	public void CheckCorrectJsonReader() throws IOException {
+	public void CheckCorrectJsonReader() throws IOException, InterruptedException {
 		String dummyTest = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
+		Process pro = Runtime.getRuntime().exec("touch /home/g26/temp.txt");
+		pro.waitFor();
 		File file = new File("/home/g26/temp.txt");
 		System.out.println(file.createNewFile());
 		FileWriter myWriter = new FileWriter(file);
