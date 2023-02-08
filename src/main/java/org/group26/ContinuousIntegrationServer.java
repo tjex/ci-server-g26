@@ -25,7 +25,7 @@ import org.apache.maven.shared.verifier.Verifier;
  */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
-	public static final String PATH = "/Users/arian/edu/kth/softfund_dd2480/testing/";
+	public static final String PATH = "/home/g26/repo/";
 	public void handle(String target,
 			Request baseRequest,
 			HttpServletRequest request,
