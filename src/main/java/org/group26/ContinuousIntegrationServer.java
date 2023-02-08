@@ -146,7 +146,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
-		String token = System.getenv("CI_TOKEN");
+		String token = System.getenv("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");
 		
 		response.setHeader("Authorization", token);
 		response.setHeader("Content-type", "application/json");
