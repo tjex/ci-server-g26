@@ -49,4 +49,19 @@ public class HelperFunctionsTest {
 		assertTrue(file.isDirectory());
 		file.delete();
 	}
+
+    /**
+     * 	First check if there exist a directory ci-server-g26/ we should assert false.
+     * 	Second check if there exist a directory ci-server-g26/ after using gitClone function, which should assert true.
+     */
+    @Test
+    public void CheckIfGitCloneWithOutputDirCreatesNewFolder() throws IOException, InterruptedException {
+        String branch = "main";
+        String URL = "https://github.com/tjex/ci-server-g26.git";
+        File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
+        assertFalse(file.isDirectory());
+        HelperFucntion.gitCloneWithOutputDir(URL, branch,ContinuousIntegrationServer.PATH);
+        assertTrue(file.isDirectory());
+        file.delete();
+    }
 }

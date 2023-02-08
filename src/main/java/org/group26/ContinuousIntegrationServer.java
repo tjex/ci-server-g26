@@ -2,15 +2,22 @@ package org.group26;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.maven.shared.verifier.VerificationException;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
+
+import org.apache.maven.shared.verifier.util.ResourceExtractor;
+import org.apache.maven.shared.verifier.Verifier;
+
 
 /**
  *	Skeleton of a ContinuousIntegrationServer which acts as webhook
@@ -18,7 +25,7 @@ import org.json.JSONObject;
  */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
-	public static final String PATH = "/home/g26/repo/";
+	public static final String PATH = "/Users/arian/edu/kth/softfund_dd2480/testing/";
 	public void handle(String target,
 			Request baseRequest,
 			HttpServletRequest request,
@@ -71,35 +78,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		response.getWriter().println("CI job done");
 	}
-	
-	/**
-	 * 	Attempts to build the application.
-	 *
-	 * 	@param pathToRepo Project which is going to be built.
-	 */
-	public String[] build(String pathToRepo) {
-		String[] result = new String[3];
-
-		// TODO: Add remaining code
-
-		result[0] = "FAILED";
-		result[1] = "DATE";
-		result[2] = "LOG";
-		return result;
-	}
-
-	/**
-	 * 	Attempts to runs all tests
-	 *
-	 * 	@return Array of test statuses?
-	 */
-	public String[] test() {
-		String[] result = new String[1337]; // dummy number
-
-		// TODO: Add remaining code
-
-		return result;
-	}
 
 	/**
 	 * 	Clones the repository into folder: {@code ContinuousIntegrationServer.PATH}/ci-server-g26/
@@ -124,23 +102,39 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		return file.isDirectory();
 	}
 
-	/**
-	 * 	Sends response back to Github.
-	 *
-	 * 	@param message The message
-	 * 	@param url URL to where (PR, commit, issue, whatever?)
-	 */
-	public void sendResponse(String message, String url) {
-		// TODO: Add remaining code
-	}
-
 
 	// used to start the CI server in command line
 	public static void main(String[] args) throws Exception
 	{
-		Server server = new Server(8026);
-		server.setHandler(new ContinuousIntegrationServer());
-		server.start();
-		server.join();
-	}
+        Server server = new Server(8026);
+        server.setHandler(new ContinuousIntegrationServer());
+        server.start();
+        server.join();
+    }
+    
+    /**
+     * 	Attempts to build the application.
+     * 
+     * 	@param pathToRepo Project which is going to be built.
+     */
+    public String[] build(String pathToRepo) {
+        LocalDateTime time = LocalDateTime.now();
+        System.out.println(time.toString());
+    	String[] result = new String[]{"SUCCESS",time.toString(),""}; // BUILD STATUS, TIME, LOG
+
+        try {
+            Verifier verifier = new Verifier(pathToRepo);
+            verifier.addCliArgument( "install" );
+            verifier.execute();
+            verifier.verify(true);
+
+        } catch (VerificationException e) {
+            result[0] = "FAILED";
+            result[2] = e.toString();
+            //System.out.println(e.getMessage());
+        }
+
+    	return result;
+    }
+
 }
