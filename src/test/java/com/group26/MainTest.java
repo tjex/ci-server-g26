@@ -41,7 +41,7 @@ public class MainTest
 
     /**
      * Tests if a working commit on main is built successful
-     * The specific commit ae7050c32e33393f58117d78810eed725549597c has been tested manually
+     * The specific commit a04af7c4d9e2c104cb781df404800bf3c98cd8cb has been tested manually
      */
     public void testBuildSuccess() {
         String path = ContinuousIntegrationServer.PATH + "ci-server-g26/test_build_success/";
@@ -61,7 +61,7 @@ public class MainTest
 
 
         try{
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout a04af7c4d9e2c104cb781df404800bf3c98cd8cb");
             Process proc = processBuilder.start();
             proc.waitFor();
         }
@@ -106,7 +106,7 @@ public class MainTest
 
         // checking out a commit that passes all text
         try{
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout ae7050c32e33393f58117d78810eed725549597c");
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout a04af7c4d9e2c104cb781df404800bf3c98cd8cb");
             Process proc = processBuilder.start();
             proc.waitFor();
         }
