@@ -25,21 +25,6 @@ public class HelperFucntion {
 		return new JSONObject(jsonString);
 	}
 
-	/**
-	 * Takes in a String which comes from getBranchAndGitURL and formats it into a command. This command is then executed
-	 * through Runtime.getRuntime() to clone the repo from webhook branch. Stored at path on the raspberry pi.
-	 * 
-	 * @param cloningURL
-	 * @param branch
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-    public static void gitClone(String cloningURL, String branch) throws IOException, InterruptedException {
-        System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-        //Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
-        //Runtime.getRuntime().exec("git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-        Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-    }
     /**
      * Takes in a String for the github repo and a String for which branch to clone from. It then formats it into a command.
      * This command is then executed through Runtime.getRuntime() to clone the repo from webhook branch.
@@ -53,9 +38,12 @@ public class HelperFucntion {
      */
     public static void gitCloneWithOutputDir(String cloningURL, String branch, String output) throws IOException, InterruptedException {
         System.out.println("Attempt to clone with command: git clone -b " +  branch + " --single-branch " + cloningURL + " " + output);
-        //Runtime.getRuntime().exec("git clone -b " + branch  + " " + cloningURL + " " + path);
-        //Runtime.getRuntime().exec("git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
         Process proc = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + output );
         proc.waitFor();
     }
+	public static void gitClone(String cloningURL, String branch) throws IOException, InterruptedException {
+		System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
+		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + ContinuousIntegrationServer.PATH);
+		pro.waitFor();
+	}
 }
