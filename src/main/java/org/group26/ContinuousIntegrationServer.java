@@ -107,8 +107,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		// 1st clone your repository
 		// 2nd compile the code
 
-		// response.getWriter().println("end of function");
-
 		 System.out.println("CI job done");
 	}
 
