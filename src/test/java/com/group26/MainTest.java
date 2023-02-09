@@ -42,10 +42,10 @@ public class MainTest
 
     /**
      * Tests if a working commit on main is built successful
-     * The specific commit 6cbdd6e14ead3ede622a40095e56634cdad8d9e4 has been tested manually
-
-    public void testBuildSuccess() {
-        String path = ContinuousIntegrationServer.PATH + "testing/test_build_success/";
+     * The specific commit a6c479e2db14d78bf5270701c57697b544c74bba has been tested manually
+    **/
+    public void testBuildSuccessAndFail() throws IOException, InterruptedException {
+        String path = "/home/g26/testing/";
         File dir = new File(path);
         try {
             FileUtils.deleteDirectory(dir);
@@ -55,14 +55,13 @@ public class MainTest
 
         ContinuousIntegrationServer server = new ContinuousIntegrationServer();
         try {
-            HelperFucntion.gitCloneWithOutputDir("https://github.com/tjex/ci-server-g26.git", "main", path);
+            HelperFucntion.gitClone("https://github.com/tjex/ci-server-g26.git", "main", path);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-
         try{
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout 6cbdd6e14ead3ede622a40095e56634cdad8d9e4");
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout a6c479e2db14d78bf5270701c57697b544c74bba");
             Process proc = processBuilder.start();
             proc.waitFor();
         }
@@ -70,47 +69,9 @@ public class MainTest
             throw new RuntimeException(e);
         }
 
+        boolean succes = server.buildRepo(path);
+        assertEquals(true, succes);
 
-        String[] result = server.build(path);
-        System.out.println(result[2]);
-        assertEquals("FAILED", result[0]);
-    }
-
-    /**
-     * Tests if a build fails
-     * By removing the file that contains the function that is used in this test
-     * the project should not be able to build
-
-    public void testBuildFail() {
-        String path = ContinuousIntegrationServer.PATH + "testing/test_build_fail/";
-        System.out.println("directory to be deleted " + path);
-        File dir = new File(path);
-        try {
-            FileUtils.deleteDirectory(dir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(path);
-        ContinuousIntegrationServer server = new ContinuousIntegrationServer();
-        try {
-            HelperFucntion.gitCloneWithOutputDir("https://github.com/tjex/ci-server-g26.git", "main", path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        // checking out a commit that passes all text
-        try{
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout 6cbdd6e14ead3ede622a40095e56634cdad8d9e4");
-            Process proc = processBuilder.start();
-            proc.waitFor();
-        }
-        catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Deleting the file that contains the function that's called in this function should give build error
         File file = new File(path + "src/main/java/org/group26/HelperFucntion.java");
         System.out.println(path + "src/main/java/org/group26/HelperFucntion.java");
         Boolean is_deleted = file.delete();
@@ -119,9 +80,7 @@ public class MainTest
             throw new RuntimeException("failed to delete file: " + file.getName());
         }
 
-        String[] result = server.build(path);
-        assertEquals("FAILED", result[0]);
-
+        boolean result = server.buildRepo(path);
+        assertEquals(false, result);
     }
-    */
 }
