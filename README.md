@@ -8,6 +8,7 @@
     - [buildRepo()](#buildRepo)
     - [sendResponse()](#sendResponse)
 - [Statement of Contributions](#statement-of-contributions)
+- [Essence Standard](#essence-standard)
 
 This repo is the codebase for a continuous integration server.   
 The server acts as an automated build confirmation tool that communicates 
@@ -218,3 +219,23 @@ Below are the function definitions used above.
     - webhook setup
     - server response debugging
     - documentation
+
+## Essence Standard 
+
+Our way of working that we developed in the [previous project](https://github.com/tjex/decide-g26) 
+needed to evolve to achieve this project. It was difficult to split the project into atomic tasks 
+as each component relied heavily on the previous component being completed in order to define the structure 
+of its output and subsequent data handeling. This meant that we had to shift more towards a group programming style, where 
+multiple people would work on one person's machine to build each component. We found that this often lead to a much 
+faster resolution of bugs and provided good forsight towards general issues with program design.
+
+We decided on a set of tools and became aquainted with them. This related in particular to the chosen server setup, 
+a Raspberry PI 4. As the server needed to be consistently updated and worked on, we assigned some members of the team 
+to in essence be system admins. This reduced the cognitive load from all as each party had either a responsibility to be 
+focussed on the code generation or the implementation and management of the server. However, due to the fluidity of excellent 
+verbal communication found in this group, all team members were equally able to apply themselves to writing code, debugging and 
+working with the server. 
+
+We are pleased to report that all members of the team feel they were included and respected equally in the process of both design and implementation, 
+and are equally proud of the solutions developed and the functionality of the end result. 
+
