@@ -249,6 +249,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		return build;
 	}
 
+    /**
+     * Saves the build status to a file.
+     *
+     * The file is created using the commit ID extracted from the commit URL and a given path.
+     * If the file already exists, it is overwritten.
+     * The file contains the commit URL, the build time, and the build log.
+     *
+     * @param build the build status to be saved
+     * @param commitURL the URL of the commit
+     * @param path the path where the file should be saved
+     */
     public void saveBuildStatus(BuildStatus build, String commitURL ,String path){
         String[] split = commitURL.split("/");
         String commitId = split[split.length - 1];
@@ -267,6 +278,5 @@ public class ContinuousIntegrationServer extends AbstractHandler
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-
     }
 }
