@@ -220,7 +220,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		while ((line = bufferedReader.readLine()) != null){
 			System.out.println(line);
 			log += line + "\n";
-			if(line.contains("BUILD") && line.contains("FAILED")){
+			if(line.contains("BUILD") && line.contains("FAILURE")){
 				buildBoolean = false;
 			}
 			if(line.contains("BUILD") && line.contains("SUCCESS")){

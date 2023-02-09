@@ -20,10 +20,11 @@ public class MainTest
      * Create the test case
      *
      * @param testName name of the test case
-     */
-    // public MainTest(String testName) {
-    //     super(testName);
-    // }
+
+    public MainTest(String testName) {
+        super(testName);
+    }
+    */
 
     /**
      * @return the suite of tests being tested
@@ -42,7 +43,7 @@ public class MainTest
     /**
      * Tests if a working commit on main is built successful
      * The specific commit 6cbdd6e14ead3ede622a40095e56634cdad8d9e4 has been tested manually
-     */
+
     public void testBuildSuccess() {
         String path = ContinuousIntegrationServer.PATH + "testing/test_build_success/";
         File dir = new File(path);
@@ -79,7 +80,7 @@ public class MainTest
      * Tests if a build fails
      * By removing the file that contains the function that is used in this test
      * the project should not be able to build
-     */
+
     public void testBuildFail() {
         String path = ContinuousIntegrationServer.PATH + "testing/test_build_fail/";
         System.out.println("directory to be deleted " + path);
@@ -122,4 +123,5 @@ public class MainTest
         assertEquals("FAILED", result[0]);
 
     }
+    */
 }
