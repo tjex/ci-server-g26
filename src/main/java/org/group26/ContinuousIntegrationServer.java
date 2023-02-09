@@ -18,11 +18,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
 
-import org.apache.maven.shared.verifier.util.ResourceExtractor;
 import org.apache.maven.shared.verifier.Verifier;
 
 
@@ -40,7 +38,20 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		PENDING,
 		SUCCESS
 	}
-	
+
+	/**
+	 *
+	 * @param target The target of the request - either a URI or a name.
+	 * @param baseRequest The original unwrapped request object.
+	 * @param request The request either as the {@link Request}
+	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
+	 * method can be used access the Request object if required.
+	 * @param response The response as the {@link Response}
+	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
+	 * method can be used access the Response object if required.
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	public void handle(String target,
 			Request baseRequest,
 			HttpServletRequest request,
@@ -94,15 +105,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
             System.out.println("successful build eval - false");
 			sendResponse(CommitStatus.FAILURE, commitURL, buildEval);
 		}
-
-		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		//sendResponse(CommitStatus.SUCCESS, commitURL);
-
-
-		// here you do all the continuous integration tasks
-		// for example
-		// 1st clone your repository
-		// 2nd compile the code
 
 		 System.out.println("CI job done");
 	}
@@ -188,7 +190,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		log = "";
 	}
 
-	// used to start the CI server in command line
+
+
+	/**
+	 *  Used to start the CI server in command line
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception
 	{
         Server server = new Server(8026);
@@ -196,36 +204,16 @@ public class ContinuousIntegrationServer extends AbstractHandler
         server.start();
         server.join();
     }
-    
-    /**
-     * 	Attempts to build the application.
-     * 
-     * 	@param pathToRepo Project which is going to be built.
-     */
-    public String[] build(String pathToRepo) {
-        LocalDateTime time = LocalDateTime.now();
-        System.out.println(time.toString());
-    	String[] result = new String[]{"NONE",time.toString(),""}; // BUILD STATUS, TIME, LOG
 
-        try {
-            Verifier verifier = new Verifier(pathToRepo);
-            verifier.addCliArgument( "install" );
-            verifier.execute();
-            verifier.verify(true);
-            result[0] = "SUCCESS";
 
-        } catch (VerificationException e) {
-            result[0] = "FAILED";
-            result[2] = e.toString();
-            //System.out.println(e.getMessage());
-        }
-
-    	return result;
-    }
-
-	public boolean buildRepo(String path) throws IOException, InterruptedException {
-		File file = new File(path);
-
+	/**
+	 * Builds the cloned down repo from git push branch and evaluates if it's a success or not
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public boolean buildRepo() throws IOException, InterruptedException {
+		File file = new File(PATH);
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
 		ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
