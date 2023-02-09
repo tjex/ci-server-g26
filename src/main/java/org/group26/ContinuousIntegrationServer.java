@@ -102,6 +102,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         File dir = new File("/home/g26/repo");
         if (dir.exists() && dir.isDirectory()) {
             System.setProperty("user.dir", dir.getAbsolutePath());
+            System.out.println(user.dir);
             String command = "mvn compile";
             try {
                 Process process = Runtime.getRuntime().exec(command);
