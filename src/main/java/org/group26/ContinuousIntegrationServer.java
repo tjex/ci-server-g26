@@ -80,16 +80,28 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		System.out.println(target);
 
-        // Building the cloned repo
-        String command = "cd /home/g26/repo && mvn compile";
-        Process process = Runtime.getRuntime().exec(command);
-        process.waitFor();
 
-        if (process.exitValue() == 0) {
-          System.out.println("Successfully cloned the repository.");
-        } else {
-          System.out.println("Failed to clone the repository.");
+        // Building the cloned repo
+        try {
+            // code that throws InterruptedException
+            String command = "cd /home/g26/repo && mvn compile";
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            if (process.exitValue() == 0) {
+              System.out.println("Successfully cloned the repository.");
+            } 
+        } catch (InterruptedException e) {
+                e.printStackTrace(); 
+              System.out.println("Failed to clone the repository.");
+            // handle the exception
         }
+
+
+        // if (process.exitValue() == 0) {
+        //   System.out.println("Successfully cloned the repository.");
+        // } else {
+        //   System.out.println("Failed to clone the repository.");
+        // }
 
         // if (cloneRepsoitory.file.isDirectory()){
         //
@@ -97,7 +109,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         //     System.out.println(a[0]);
         //
         // }
-        //
+        
 		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		// sendResponse(CommitStatus.SUCCESS, commitURL);
 
