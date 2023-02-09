@@ -33,7 +33,7 @@ import org.apache.maven.shared.verifier.Verifier;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
-	
+	String log = "";
 	private enum CommitStatus {
 		ERROR,
 		FAILURE,
@@ -88,11 +88,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		if(buildEval){
             System.out.println("successful build eval - true");
-			sendResponse(CommitStatus.SUCCESS, commitURL);
+			sendResponse(CommitStatus.SUCCESS, commitURL, buildEval);
 		}
 		else{
             System.out.println("successful build eval - false");
-			sendResponse(CommitStatus.FAILURE, commitURL);
+			sendResponse(CommitStatus.FAILURE, commitURL, buildEval);
 		}
 
 		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
@@ -148,7 +148,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl, boolean buildEvaluation) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
@@ -170,6 +170,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
+		if(buildEvaluation){
+			body.put("description","The build succeeded!");
+		}
+		else{
+			body.put("description",log);
+		}
+		body.put("context","CI-Server-g26");
 		StringEntity params = new StringEntity(body.toString());
 		response.setEntity(params);
 
@@ -178,6 +185,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		// Send POST to GitHub	
 		client.execute(response);
+		log = "";
 	}
 
 	// used to start the CI server in command line
