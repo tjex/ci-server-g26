@@ -41,6 +41,7 @@ public class HelperFunctionsTest {
 		assertEquals(json.getString("color"), "Red");
 		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
 		pro.waitFor();
+		file.delete();
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class HelperFunctionsTest {
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
-		File file = new File(ContinuousIntegrationServer.PATH);
+		File file = new File("/home/g26/Test/");
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
