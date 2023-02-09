@@ -118,7 +118,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		String[] refs = branch.split("/");
 		branch = refs[refs.length - 1];
 		
-		HelperFucntion.gitClone(cloningURL, branch);
+		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
 		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
