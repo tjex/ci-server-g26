@@ -126,8 +126,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		System.out.println("cloningURL: " + cloningURL);
 		String branch = payload.getString("ref");
 		String[] refs = branch.split("/");
-		branch = refs[refs.length - 1];
-		
+		int counter = 0;
+		branch = "";
+		for (String bra:refs) {
+			if(counter < 2){
+				continue;
+			}
+			else{
+				branch += bra;
+			}
+			counter++;
+		}
 		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
