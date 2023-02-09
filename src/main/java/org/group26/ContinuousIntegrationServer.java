@@ -75,6 +75,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				status = cloneRepository(requestJson);
 				if (status)
 					System.out.println("Successfully cloned repository");
+					System.out.println("Starting build of cloned repo");
+					buildRepo();
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 
@@ -192,4 +194,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     	return result;
     }
+
+	public void buildRepo() throws IOException, InterruptedException {
+		File file = new File(PATH);
+		System.out.println(file.isDirectory() + " is directory " + file.getName());
+
+		Process pro = Runtime.getRuntime().exec("mvn package");
+		pro.waitFor();
+	}
 }
