@@ -21,9 +21,15 @@ public class MainTest
      *
      * @param testName name of the test case
      */
+<<<<<<< HEAD
     public MainTest(String testName) {
         super(testName);
     }
+=======
+    // public MainTest(String testName) {
+    //     super(testName);
+    // }
+>>>>>>> test-payload
 
     /**
      * @return the suite of tests being tested
