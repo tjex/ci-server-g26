@@ -128,10 +128,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		branch = "";
 		for (String bra:refs) {
 			if(counter > 1){
-				branch += bra;
+				branch += bra + "/";
 			}
 			counter ++;
 		}
+		branch = branch.substring(0, branch.length() - 1);
+		System.out.println(branch);
 		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
