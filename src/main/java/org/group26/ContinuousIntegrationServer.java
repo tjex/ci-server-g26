@@ -103,7 +103,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         File file = new File(PATH);
         try {
-            ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
+            ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","compile"});
             Process pro = probbuilder.start();
             pro.waitFor();
             if (pro.exitValue() == 0) {
