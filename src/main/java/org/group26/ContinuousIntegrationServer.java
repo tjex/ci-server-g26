@@ -18,11 +18,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
 
-import org.apache.maven.shared.verifier.util.ResourceExtractor;
 import org.apache.maven.shared.verifier.Verifier;
 
 
@@ -33,6 +31,7 @@ import org.apache.maven.shared.verifier.Verifier;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
+    public static final String BUILD_PATH = "/home/g26/build/";
 	
 	private enum CommitStatus {
 		ERROR,
@@ -95,6 +94,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
             System.out.println("successful build eval - false");
 			sendResponse(CommitStatus.FAILURE, commitURL);
 		}
+
+
 
 		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		//sendResponse(CommitStatus.SUCCESS, commitURL);
@@ -247,4 +248,25 @@ public class ContinuousIntegrationServer extends AbstractHandler
         BuildStatus build = new BuildStatus(buildBoolean,time,log);
 		return build;
 	}
+
+    public void saveBuildStatus(BuildStatus build, String commitURL ,String path){
+        String[] split = commitURL.split("/");
+        String commitId = split[split.length - 1];
+        File file = new File(path + commitId + ".log");
+        //Creating a folder using mkdir() method
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+            fileWriter.write(commitURL + "\n" + build.time + "\n" + build.log);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+    }
 }

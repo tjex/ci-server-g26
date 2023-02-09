@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.io.FileUtils;
+import org.group26.BuildStatus;
 import org.group26.ContinuousIntegrationServer;
 import org.group26.HelperFucntion;
 
@@ -38,6 +39,24 @@ public class MainTest
      */
     public void testApp() {
         assertTrue(true);
+    }
+
+    /**
+     * Tests the functionality of the {@link ContinuousIntegrationServer#saveBuildStatus(BuildStatus, String, String)} method.
+     * Creates a {@link ContinuousIntegrationServer} object and a {@link BuildStatus} object.
+     * The test checks if a file with the log of the build does not exist before the {@link ContinuousIntegrationServer#saveBuildStatus(BuildStatus, String, String)} method is called,
+     * and if it exists after the method is called. Finally, the file is deleted.
+     */
+    public void testSaveBuildState(){
+        ContinuousIntegrationServer server = new ContinuousIntegrationServer();
+        BuildStatus buildStatus = new BuildStatus();
+        buildStatus.log = "hej";
+        String commitURL = "https://github.com/tjex/ci-server-g26/commit/hej";
+        File file = new File("/home/g26/Test/builds/hej.log");
+        assertEquals(false,file.isFile());
+        server.saveBuildStatus(buildStatus,commitURL,"/home/g26/Test/builds/");
+        assertEquals(true,file.isFile());
+        file.delete();
     }
 
     /**

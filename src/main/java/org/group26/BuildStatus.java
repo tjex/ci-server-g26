@@ -21,7 +21,7 @@ public class BuildStatus {
     /**
      * The log information for the build
      */
-    String log;
+    public String log;
 
     /**
      * Constructor to create a {@code BuildStatus} object with the specified success status,
