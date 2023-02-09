@@ -31,7 +31,8 @@ import org.apache.maven.shared.verifier.Verifier;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
-	String log = "";
+    public static final String BUILD_PATH = "/home/g26/build/";
+
 	private enum CommitStatus {
 		ERROR,
 		FAILURE,
@@ -84,6 +85,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		// Get payload as JSON
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
 		boolean buildEval = false;
+        BuildStatus buildStatus = new BuildStatus();
 		if(pushEvent) {
 			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
@@ -92,20 +94,22 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				if (status)
 					System.out.println("Successfully cloned repository");
 					System.out.println("Starting build of cloned repo");
-					buildEval = buildRepo(PATH);
+					buildStatus = buildRepo(PATH);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
-		if(buildEval){
+		if(buildStatus.success){
             System.out.println("successful build eval - true");
-			sendResponse(CommitStatus.SUCCESS, commitURL, buildEval);
+			sendResponse(CommitStatus.SUCCESS, commitURL, buildStatus);
 		}
 		else{
             System.out.println("successful build eval - false");
-			sendResponse(CommitStatus.FAILURE, commitURL, buildEval);
+			sendResponse(CommitStatus.FAILURE, commitURL, buildStatus);
 		}
 
+
+        saveBuildStatus(buildStatus,commitURL,BUILD_PATH);
 		 System.out.println("CI job done");
 	}
 
@@ -150,7 +154,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl, boolean buildEvaluation) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl, BuildStatus buildStatus) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
@@ -172,11 +176,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
-		if(buildEvaluation){
+		if(buildStatus.success){
 			body.put("description","The build succeeded!");
 		}
 		else{
-			body.put("description",log);
+			body.put("description","The build failed! :(");
 		}
 		body.put("context","CI-Server-g26");
 		StringEntity params = new StringEntity(body.toString());
@@ -187,7 +191,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		// Send POST to GitHub	
 		client.execute(response);
-		log = "";
 	}
 
 
@@ -205,14 +208,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
         server.join();
     }
 
-
 	/**
 	 * Builds the cloned down repo from git push branch and evaluates if it's a success or not
 	 * @return
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public boolean buildRepo(String path) throws IOException, InterruptedException {
+	public BuildStatus buildRepo(String path) throws IOException, InterruptedException {
 		File file = new File(path);
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
@@ -238,6 +240,40 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				buildBoolean = true;
 			}
 		}
-		return buildBoolean;
+        LocalDateTime time = LocalDateTime.now();
+        BuildStatus build = new BuildStatus(buildBoolean,time,log);
+		return build;
 	}
+
+    /**
+     * Saves the build status to a file.
+     *
+     * The file is created using the commit ID extracted from the commit URL and a given path.
+     * If the file already exists, it is overwritten.
+     * The file contains the commit URL, the build time, and the build log.
+     *
+     * @param build the build status to be saved
+     * @param commitURL the URL of the commit
+     * @param path the path where the file should be saved
+     */
+    public void saveBuildStatus(BuildStatus build, String commitURL ,String path){
+        String[] split = commitURL.split("/");
+        String commitId = split[split.length - 1];
+        File file = new File(path + commitId + ".log");
+        //Creating a folder using mkdir() method
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+            fileWriter.write(commitURL + "\n" + build.time + "\n" + build.log);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 }

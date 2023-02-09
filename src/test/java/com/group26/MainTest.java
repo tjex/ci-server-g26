@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.io.FileUtils;
+import org.group26.BuildStatus;
 import org.group26.ContinuousIntegrationServer;
 import org.group26.HelperFucntion;
 
@@ -41,6 +42,25 @@ public class MainTest
     }
 
     /**
+     * Tests the functionality of the {@link ContinuousIntegrationServer#saveBuildStatus(BuildStatus, String, String)} method.
+     * Creates a {@link ContinuousIntegrationServer} object and a {@link BuildStatus} object.
+     * The test checks if a file with the log of the build does not exist before the {@link ContinuousIntegrationServer#saveBuildStatus(BuildStatus, String, String)} method is called,
+     * and if it exists after the method is called. Finally, the file is deleted.
+     */
+    public void testSaveBuildState(){
+        ContinuousIntegrationServer server = new ContinuousIntegrationServer();
+        BuildStatus buildStatus = new BuildStatus();
+        buildStatus.log = "hej";
+        String commitURL = "https://github.com/tjex/ci-server-g26/commit/hej";
+        File file = new File("/home/g26/test_builds/hej.log");
+        assertEquals(false,file.isFile());
+        server.saveBuildStatus(buildStatus,commitURL,"/home/g26/test_builds/");
+        assert(file.length()>0);
+        assertEquals(true,file.isFile());
+        file.delete();
+    }
+
+    /**
      * Tests if a working commit on main is built successful
      * The specific commit a6c479e2db14d78bf5270701c57697b544c74bba has been tested manually
     **/
@@ -69,8 +89,8 @@ public class MainTest
             throw new RuntimeException(e);
         }
 
-        boolean succes = server.buildRepo(path);
-        assertEquals(true, succes);
+        BuildStatus buildStatus = server.buildRepo(path);
+        assertEquals(true, buildStatus.success);
 
         File file = new File(path + "src/main/java/org/group26/HelperFucntion.java");
         System.out.println(path + "src/main/java/org/group26/HelperFucntion.java");
@@ -80,7 +100,7 @@ public class MainTest
             throw new RuntimeException("failed to delete file: " + file.getName());
         }
 
-        boolean result = server.buildRepo(path);
-        assertEquals(false, result);
+        buildStatus = server.buildRepo(path);
+        assertEquals(false, buildStatus.success);
     }
 }
