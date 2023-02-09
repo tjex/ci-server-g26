@@ -80,7 +80,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		}
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
-		if(buildEval = true){
+		if(buildEval){
 			sendResponse(CommitStatus.SUCCESS, commitURL);
 		}
 		else{
