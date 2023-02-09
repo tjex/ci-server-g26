@@ -25,22 +25,14 @@ public class HelperFucntion {
 		return new JSONObject(jsonString);
 	}
 
-    /**
-     * Takes in a String for the github repo and a String for which branch to clone from. It then formats it into a command.
-     * This command is then executed through Runtime.getRuntime() to clone the repo from webhook branch.
-     * The repo is cloned to the path determined by String output
-     *
-     * @param cloningURL
-     * @param branch
-     * @param output
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static void gitCloneWithOutputDir(String cloningURL, String branch, String output) throws IOException, InterruptedException {
-        System.out.println("Attempt to clone with command: git clone -b " +  branch + " --single-branch " + cloningURL + " " + output);
-        Process proc = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + output );
-        proc.waitFor();
-    }
+	/**
+	 * Clones the repo from branch and on path.
+	 * @param cloningURL
+	 * @param branch
+	 * @param path
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void gitClone(String cloningURL, String branch, String path) throws IOException, InterruptedException {
 		System.out.println("git clone -b " +  branch + " --single-branch " + cloningURL + " " + path);
 		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + path);
