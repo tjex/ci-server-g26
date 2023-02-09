@@ -95,6 +95,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			sendResponse(CommitStatus.FAILURE, commitURL, buildStatus);
 		}
 
+        saveBuildStatus(buildStatus,commitURL,BUILD_PATH);
 
 
 		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
