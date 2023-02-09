@@ -82,18 +82,39 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 
         // Building the cloned repo
-        try {
-            // code that throws InterruptedException
-            String command = "cd /home/g26/repo && mvn compile";
-            Process process = Runtime.getRuntime().exec(command);
-            process.waitFor();
-            if (process.exitValue() == 0) {
-              System.out.println("Successfully cloned the repository.");
-            } 
-        } catch (InterruptedException e) {
+        // File dir = new File("/home/g26/repo");
+        // try {
+        //     String command = "cd /home/g26/repo";
+        //     Process process = Runtime.getRuntime().exec(command);
+        //     process.waitFor();
+        //
+        //     command = "cd /home/g26/repo && mvn compile";
+        //     process.waitFor();
+        //     if (process.exitValue() == 0) {
+        //       System.out.println("Successfully cloned the repository.");
+        //     } 
+        // } catch (InterruptedException e) {
+        //         e.printStackTrace(); 
+        //       System.out.println("Failed to clone the repository.");
+        //     // handle the exception
+        // }
+
+        File dir = new File("/home/g26/repo");
+        if (dir.exists() && dir.isDirectory()) {
+            System.setProperty("user.dir", dir.getAbsolutePath());
+            String command = "mvn compile";
+            try {
+                Process process = Runtime.getRuntime().exec(command);
+                process.waitFor();
+                if (process.exitValue() == 0) {
+                    System.out.println("Successfully compiled the repository.");
+                } 
+            } catch (InterruptedException e) {
                 e.printStackTrace(); 
-              System.out.println("Failed to clone the repository.");
-            // handle the exception
+                System.out.println("Failed to compile the repository.");
+            }
+        } else {
+            System.out.println("The specified directory does not exist or is not a directory.");
         }
 
 
