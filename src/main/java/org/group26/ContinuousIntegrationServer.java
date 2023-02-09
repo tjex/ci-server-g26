@@ -1,11 +1,6 @@
 package org.group26;
 
-<<<<<<< HEAD
-import java.io.File;
-import java.io.IOException;
-=======
 import java.io.*;
->>>>>>> test-payload
 import java.time.LocalDateTime;
 
 import javax.servlet.ServletException;
@@ -71,11 +66,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		// Get payload as JSON
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
-<<<<<<< HEAD
-		
-=======
 		boolean buildEval = false;
->>>>>>> test-payload
 		if(pushEvent) {
 			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
@@ -83,91 +74,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				status = cloneRepository(requestJson);
 				if (status)
 					System.out.println("Successfully cloned repository");
-<<<<<<< HEAD
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-
-		System.out.println(target);
-
-		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		// sendResponse(CommitStatus.SUCCESS, commitURL);
-
-		// here you do all the continuous integration tasks
-		// for example
-		// 1st clone your repository
-		// 2nd compile the code
-
-		// response.getWriter().println("end of function");
-
-		// response.getWriter().println("CI job done");
-	}
-
-	/**
-	 * 	Clones the repository into folder: {@code ContinuousIntegrationServer.PATH}/ci-server-g26/
-	 *
-	 * 	@param payload JSON payload from GitHub web hook
-	 * 	@throws IOException If an I/O error occurs 
-	 * 	@throws InterruptedException 
-	 */
-	public boolean cloneRepository(JSONObject payload) throws IOException, InterruptedException {
-		// Gets the relevant info from json file such as clone url and branch
-		JSONObject repo = (JSONObject) payload.get("repository");
-		String cloningURL= repo.getString("clone_url");
-		System.out.println("cloningURL: " + cloningURL);
-		String branch = payload.getString("ref");
-		String[] refs = branch.split("/");
-		branch = refs[refs.length - 1];
-		
-		HelperFucntion.gitClone(cloningURL, branch);
-		
-		// Returns true if repository was successfully cloned
-		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
-		return file.isDirectory();
-	}
-
-	/**
-	 * 	Sends response back to GitHub.
-	 *
-	 * 	@param status Commit status (error, failure, pending, success)
-	 * 	@param commitUrl The pushed commit URL
-	 * 	@throws IOException 
-	 * 	@throws ClientProtocolException
-	 * 
-	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
-	 */
-	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
-		
-		System.out.println("Sending response to commit url: " + commitUrl);
-		
-		String token = System.getenv("CI_TOKEN");
-		
-		// Get commit id from URL
-		String[] split = commitUrl.split("/");
-		String commitId = split[split.length - 1]; 
-		
-		CloseableHttpClient client = HttpClientBuilder.create().build();
-
-		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/statuses/" + commitId);
-		response.setHeader("Authorization", "Bearer " + token);
-		response.setHeader("Content-type", "application/json");
-		response.setHeader("Accept", "application/vnd.github.v3+json");
-
-		JSONObject body = new JSONObject();
-		body.put("owner", "tjex");
-		body.put("repo", "ci-server-g26");
-		body.put("sha", commitId);
-		body.put("state", status.toString().toLowerCase());
-		StringEntity params = new StringEntity(body.toString());
-		response.setEntity(params);
-
-		System.out.println("Response payload:");
-		System.out.println(body.toString());
-		
-		// Send POST to GitHub	
-		client.execute(response);
-	}
-
-=======
 					System.out.println("Starting build of cloned repo");
 					buildEval = buildRepo();
 			} catch (Exception e) { e.printStackTrace(); }
@@ -261,7 +167,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		client.execute(response);
 	}
 
->>>>>>> test-payload
 	// used to start the CI server in command line
 	public static void main(String[] args) throws Exception
 	{
@@ -296,8 +201,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     	return result;
     }
-<<<<<<< HEAD
-=======
 
 	public boolean buildRepo() throws IOException, InterruptedException {
 		File file = new File(PATH);
@@ -326,5 +229,4 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		}
 		return buildBoolean;
 	}
->>>>>>> test-payload
 }
