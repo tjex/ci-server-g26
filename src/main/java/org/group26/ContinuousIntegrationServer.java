@@ -80,6 +80,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		System.out.println(target);
 
+
+        if (cloneRepsoitory.file.isDirectory()){
+
+        // build the cloned repo
+        String[] a = build('/home/g26/repo');
+        System.out.println(a[0]);
+
+        }
 		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		// sendResponse(CommitStatus.SUCCESS, commitURL);
 
