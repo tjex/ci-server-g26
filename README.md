@@ -223,10 +223,11 @@ Below are the function definitions used above.
     - Git cloning the branch of which the webhook was pushed from.
     - Test for both of the above.
 - Tillman Jex
-    - raspberry pi server setup
+    - raspberry pi server setup and management
     - webhook setup
     - server response debugging
-    - documentation
+    - automated build process and response aquisition debugging
+    - readme documentation
 
 ## Essence Standard 
 
