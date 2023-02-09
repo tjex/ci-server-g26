@@ -33,7 +33,7 @@ public class HelperFunctionsTest {
 		HelperFucntion helpJsonCreate = new HelperFucntion();
 		BufferedReader br = new BufferedReader(new FileReader("temp.txt"));
 		JSONObject json = helpJsonCreate.getJsonFromRequestReader(br);
-		assertEquals(json.getString("fruit"), "Apple");
+		assertEquals(json.getString("fruit"), "Apple1");
 		assertEquals(json.getString("size"), "Large");
 		assertEquals(json.getString("color"), "Red");
 		file.delete();
