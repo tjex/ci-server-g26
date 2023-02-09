@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.eclipse.jetty.server.Server;
 
@@ -32,7 +33,7 @@ import org.apache.maven.shared.verifier.Verifier;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
-	
+	String log = "";
 	private enum CommitStatus {
 		ERROR,
 		FAILURE,
@@ -46,6 +47,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			HttpServletResponse response)
 					throws IOException, ServletException
 	{
+		File file = new File(PATH);
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+			//Process pro = Runtime.getRuntime().exec("rm -rf " +  PATH);
+		}
 		baseRequest.setHandled(true);
 		
 		// response.getWriter().println("START OF LIFE");
@@ -82,26 +88,22 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		if(buildEval){
             System.out.println("successful build eval - true");
-			sendResponse(CommitStatus.SUCCESS, commitURL);
+
+			sendResponse(CommitStatus.SUCCESS, commitURL, buildEval);
 		}
 		else{
             System.out.println("successful build eval - false");
-			sendResponse(CommitStatus.FAILURE, commitURL);
+			sendResponse(CommitStatus.FAILURE, commitURL, buildEval);
 		}
-
-		//System.out.println(target);
 
 		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		//sendResponse(CommitStatus.SUCCESS, commitURL);
-
 		// here you do all the continuous integration tasks
 		// for example
 		// 1st clone your repository
 		// 2nd compile the code
 
-		// response.getWriter().println("end of function");
-
-		// response.getWriter().println("CI job done");
+		 System.out.println("CI job done");
 	}
 
 	/**
@@ -118,8 +120,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		System.out.println("cloningURL: " + cloningURL);
 		String branch = payload.getString("ref");
 		String[] refs = branch.split("/");
-		branch = refs[refs.length - 1];
-		
+
+		int counter = 0;
+		branch = "";
+		for (String bra:refs) {
+			if(counter > 1){
+				branch += bra + "/";
+			}
+			counter ++;
+		}
+		branch = branch.substring(0, branch.length() - 1);
+		System.out.println(branch);
 		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
@@ -137,7 +148,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl, boolean buildEvaluation) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
@@ -159,6 +170,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
+		if(buildEvaluation){
+			body.put("description","The build succeeded!");
+		}
+		else{
+			body.put("description",log);
+		}
+		body.put("context","CI-Server-g26");
 		StringEntity params = new StringEntity(body.toString());
 		response.setEntity(params);
 
@@ -167,6 +185,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		
 		// Send POST to GitHub	
 		client.execute(response);
+		log = "";
 	}
 
 	// used to start the CI server in command line
@@ -222,6 +241,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		while ((line = bufferedReader.readLine()) != null){
 			System.out.println(line);
 			log += line + "\n";
+
+
 			if(line.contains("BUILD") && line.contains("FAILURE")){
 				buildBoolean = false;
 			}

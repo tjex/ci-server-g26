@@ -53,6 +53,10 @@ public class HelperFunctionsTest {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
 		File file = new File("/home/g26/Test/");
+
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+		}
 		assertFalse(file.isDirectory());
 		HelperFucntion.gitClone(URL, branch, "/home/g26/Test/");
 		assertTrue(file.isDirectory());
@@ -80,5 +84,9 @@ public class HelperFunctionsTest {
             FileUtils.deleteDirectory(file);
         }
     }
+
 	*/
 }
+
+
+
