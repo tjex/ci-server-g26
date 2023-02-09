@@ -81,7 +81,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				if (status)
 					System.out.println("Successfully cloned repository");
 					System.out.println("Starting build of cloned repo");
-					buildEval = buildRepo();
+					buildEval = buildRepo(PATH);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
@@ -223,8 +223,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
     	return result;
     }
 
-	public boolean buildRepo() throws IOException, InterruptedException {
-		File file = new File(PATH);
+	public boolean buildRepo(String path) throws IOException, InterruptedException {
+		File file = new File(path);
 
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
@@ -232,7 +232,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		probbuilder.directory(file);
 		Process pro = probbuilder.start();
 		pro.waitFor();
-		File jarFile = new File(PATH + "target/");
+		File jarFile = new File(path + "target/");
 		System.out.println(jarFile.isDirectory() + " is directory " + jarFile.getName());
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 		String log = "";

@@ -80,9 +80,9 @@ public class MainTest
      * Tests if a build fails
      * By removing the file that contains the function that is used in this test
      * the project should not be able to build
-
-    public void testBuildFail() {
-        String path = ContinuousIntegrationServer.PATH + "testing/test_build_fail/";
+    **/
+    public void testBuildFail() throws IOException, InterruptedException {
+        String path = "/home/g26/testing/";
         System.out.println("directory to be deleted " + path);
         File dir = new File(path);
         try {
@@ -90,10 +90,10 @@ public class MainTest
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(path);
+
         ContinuousIntegrationServer server = new ContinuousIntegrationServer();
         try {
-            HelperFucntion.gitCloneWithOutputDir("https://github.com/tjex/ci-server-g26.git", "main", path);
+            HelperFucntion.gitClone("https://github.com/tjex/ci-server-g26.git", "main", path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -119,9 +119,7 @@ public class MainTest
             throw new RuntimeException("failed to delete file: " + file.getName());
         }
 
-        String[] result = server.build(path);
-        assertEquals("FAILED", result[0]);
-
+        boolean result = server.buildRepo(path);
+        assertEquals(false, result);
     }
-    */
 }
