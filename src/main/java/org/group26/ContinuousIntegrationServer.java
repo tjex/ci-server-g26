@@ -81,9 +81,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
 		if(buildEval){
+            System.out.println("successful build eval - true");
 			sendResponse(CommitStatus.SUCCESS, commitURL);
 		}
 		else{
+            System.out.println("successful build eval - false");
 			sendResponse(CommitStatus.FAILURE, commitURL);
 		}
 
