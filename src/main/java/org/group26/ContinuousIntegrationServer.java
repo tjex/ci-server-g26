@@ -129,13 +129,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		int counter = 0;
 		branch = "";
 		for (String bra:refs) {
-			if(counter < 2){
-				continue;
-			}
-			else{
+			if(counter > 1){
 				branch += bra;
 			}
-			counter++;
+			counter ++;
 		}
 		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
