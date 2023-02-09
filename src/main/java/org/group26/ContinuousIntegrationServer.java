@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.eclipse.jetty.server.Server;
 
@@ -87,6 +88,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		else{
             System.out.println("successful build eval - false");
 			sendResponse(CommitStatus.FAILURE, commitURL);
+		}
+		File file = new File(PATH);
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+			//Process pro = Runtime.getRuntime().exec("rm -rf " +  PATH);
 		}
 
 		//System.out.println(target);
