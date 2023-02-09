@@ -212,8 +212,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public boolean buildRepo() throws IOException, InterruptedException {
-		File file = new File(PATH);
+	public boolean buildRepo(String path) throws IOException, InterruptedException {
+		File file = new File(path);
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
 		ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
