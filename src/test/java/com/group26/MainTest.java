@@ -52,9 +52,9 @@ public class MainTest
         BuildStatus buildStatus = new BuildStatus();
         buildStatus.log = "hej";
         String commitURL = "https://github.com/tjex/ci-server-g26/commit/hej";
-        File file = new File("/home/g26/Test/builds/hej.log");
+        File file = new File("/home/g26/test_builds/hej.log");
         assertEquals(false,file.isFile());
-        server.saveBuildStatus(buildStatus,commitURL,"/home/g26/Test/builds/");
+        server.saveBuildStatus(buildStatus,commitURL,"/home/g26/test_builds/");
         assertEquals(true,file.isFile());
         file.delete();
     }
