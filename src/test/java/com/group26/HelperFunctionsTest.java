@@ -24,6 +24,8 @@ public class HelperFunctionsTest {
 
 	/**
 	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void CheckCorrectJsonReader() throws IOException, InterruptedException {
@@ -47,7 +49,11 @@ public class HelperFunctionsTest {
 	/**
 	 * 	First check if there exist a directory ci-server-g26/ we should assert false.
 	 * 	Second check if there exist a directory ci-server-g26/ after using gitClone function, which should assert true.
+	 * 	@throws IOException
+	 * 	@throws InterruptedException
 	 */
+
+
 	@Test
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
@@ -63,43 +69,5 @@ public class HelperFunctionsTest {
 			FileUtils.deleteDirectory(file);
 		}
 	}
-
-    /**
-     * 	First check if there exist a directory ci-server-g26/ we should assert false.
-     * 	Second check if there exist a directory ci-server-g26/ after using gitClone function, which should assert true.
-
-    @Test
-    public void CheckIfGitCloneWithOutputDirCreatesNewFolder() throws IOException, InterruptedException {
-        String branch = "main";
-        String URL = "https://github.com/tjex/ci-server-g26.git";
-        File file = new File(ContinuousIntegrationServer.PATH);
-        if(file.isDirectory()){
-            FileUtils.deleteDirectory(file);
-        }
-        assertFalse(file.isDirectory());
-        HelperFucntion.gitCloneWithOutputDir(URL, branch, ContinuousIntegrationServer.PATH);
-        assertTrue(file.isDirectory());
-        if(file.isDirectory()){
-            FileUtils.deleteDirectory(file);
-        }
-    }
-
-	*/
-
-    // @Test
-    // public void CheckIfGitCloneWithOutputDirCreatesNewFolder() throws IOException, InterruptedException {
-    //     String branch = "main";
-    //     String URL = "https://github.com/tjex/ci-server-g26.git";
-    //     File file = new File(ContinuousIntegrationServer.PATH);
-    //     if(file.isDirectory()){
-    //         FileUtils.deleteDirectory(file);
-    //     }
-    //     assertFalse(file.isDirectory());
-    //     HelperFucntion.gitCloneWithOutputDir(URL, branch, ContinuousIntegrationServer.PATH);
-    //     assertTrue(file.isDirectory());
-    //     if(file.isDirectory()){
-    //         FileUtils.deleteDirectory(file);
-        // }
-    // }
 }
 

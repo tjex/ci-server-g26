@@ -11,7 +11,7 @@ public class BuildStatus {
     /**
      * A boolean indicating the success status of the build
      */
-    boolean success;
+    public boolean success;
 
     /**
      * The time when the build was executed
