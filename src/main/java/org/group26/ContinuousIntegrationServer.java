@@ -1,7 +1,6 @@
 package org.group26;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 
 import javax.servlet.ServletException;
@@ -67,7 +66,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		// Get payload as JSON
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
-		
+		boolean buildEval = false;
 		if(pushEvent) {
 			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
@@ -76,13 +75,21 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				if (status)
 					System.out.println("Successfully cloned repository");
 					System.out.println("Starting build of cloned repo");
-					buildRepo();
+					buildEval = buildRepo();
 			} catch (Exception e) { e.printStackTrace(); }
 		}
+		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
-		System.out.println(target);
+		if(buildEval = true){
+			sendResponse(CommitStatus.SUCCESS, commitURL);
+		}
+		else{
+			sendResponse(CommitStatus.FAILURE, commitURL);
+		}
 
-		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
+		//System.out.println(target);
+
+		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		// sendResponse(CommitStatus.SUCCESS, commitURL);
 
 		// here you do all the continuous integration tasks
@@ -195,11 +202,31 @@ public class ContinuousIntegrationServer extends AbstractHandler
     	return result;
     }
 
-	public void buildRepo() throws IOException, InterruptedException {
+	public boolean buildRepo() throws IOException, InterruptedException {
 		File file = new File(PATH);
+
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
-		Process pro = Runtime.getRuntime().exec("mvn package");
+		ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
+		probbuilder.directory(file);
+		Process pro = probbuilder.start();
 		pro.waitFor();
+		File jarFile = new File(PATH + "target/");
+		System.out.println(jarFile.isDirectory() + " is directory " + jarFile.getName());
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+		String log = "";
+		String line = "";
+		boolean buildBoolean = false;
+		while ((line = bufferedReader.readLine()) != null){
+			System.out.println(line);
+			log += line + "\n";
+			if(line.contains("BUILD") && line.contains("FAILED")){
+				buildBoolean = false;
+			}
+			if(line.contains("BUILD") && line.contains("SUCCESS")){
+				buildBoolean = true;
+			}
+		}
+		return buildBoolean;
 	}
 }
