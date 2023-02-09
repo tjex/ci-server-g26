@@ -56,6 +56,8 @@ is below:
 To create an endpoint for Github to communicate with, we start a basic HTTP server:
 
 ```java
+// ../src/main/java/org/group26/ContinuousIntegrationServer.java
+
 	public static void main(String[] args) throws Exception
 	{
         Server server = new Server(8026);
@@ -109,6 +111,8 @@ Below are the function definitions used above.
 ### cloneRepository()
 
 ```java
+// ../src/main/java/org/group26/ContinuousIntegrationServer.java
+
 	public boolean cloneRepository(JSONObject payload) throws IOException, InterruptedException {
 		// Gets the relevant info from json file such as clone url and branch
 		JSONObject repo = (JSONObject) payload.get("repository");
@@ -136,6 +140,8 @@ Below are the function definitions used above.
 ### buildRepo()
 
 ```java
+// ../src/main/java/org/group26/ContinuousIntegrationServer.java
+
 	public boolean buildRepo() throws IOException, InterruptedException {
 		File file = new File(PATH);
 
@@ -171,6 +177,8 @@ Below are the function definitions used above.
 ### sendResponse()
 
 ```java
+// ../src/main/java/org/group26/ContinuousIntegrationServer.java
+
 	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
