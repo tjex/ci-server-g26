@@ -1,5 +1,14 @@
 # ci-server-g26
 
+## TOC
+
+- [The CI Server](#the-ci-server)
+- [Function Deep Dive](#function-deep-dive)
+    - [cloneReposiory()](#cloneRepository)
+    - [buildRepo()](#buildRepo)
+    - [sendResponse()](#sendResponse)
+- [Statement of Contributions](#statement-of-contributions)
+
 This repo is the codebase for a continuous integration server.   
 The server acts as an automated build confirmation tool that communicates 
 with Github on the success / faliure of commited code. The process is as follows:
