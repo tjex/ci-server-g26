@@ -99,38 +99,42 @@ public class ContinuousIntegrationServer extends AbstractHandler
         //     // handle the exception
         // }
 
-        File dir = new File("/home/g26/repo");
-        if (dir.exists() && dir.isDirectory()) {
-            System.setProperty("user.dir", dir.getAbsolutePath());
-            System.out.println(user.dir);
-            String command = "mvn compile";
-            try {
-                Process process = Runtime.getRuntime().exec(command);
-                process.waitFor();
-                if (process.exitValue() == 0) {
-                    System.out.println("Successfully compiled the repository.");
-                } 
-            } catch (InterruptedException e) {
-                e.printStackTrace(); 
-                System.out.println("Failed to compile the repository.");
-            }
-        } else {
-            System.out.println("The specified directory does not exist or is not a directory.");
+        // darpos sollution 
+
+        File file = new File(PATH);
+        try {
+            ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
+            Process pro = probbuilder.start();
+            pro.waitFor();
+            if (pro.exitValue() == 0) {
+                System.out.println("Successfully compiled the repository.");
+            } 
+        } catch (InterruptedException e) {
+            e.printStackTrace(); 
+            System.out.println("Failed to compile the repository.");
         }
 
 
-        // if (process.exitValue() == 0) {
-        //   System.out.println("Successfully cloned the repository.");
+        // This reaches 'successfully compiled the respository', but it doesnt build
+        // File dir = new File("/home/g26/repo");
+        // if (dir.exists() && dir.isDirectory()) {
+        //     System.setProperty("user.dir", dir.getAbsolutePath());
+        //     System.out.println(user.dir);
+        //     String command = "mvn compile";
+        //     try {
+        //         Process process = Runtime.getRuntime().exec(command);
+        //         process.waitFor();
+        //         if (process.exitValue() == 0) {
+        //             System.out.println("Successfully compiled the repository.");
+        //         } 
+        //     } catch (InterruptedException e) {
+        //         e.printStackTrace(); 
+        //         System.out.println("Failed to compile the repository.");
+        //     }
         // } else {
-        //   System.out.println("Failed to clone the repository.");
+        //     System.out.println("The specified directory does not exist or is not a directory.");
         // }
 
-        // if (cloneRepsoitory.file.isDirectory()){
-        //
-        //     String[] a = build('/home/g26/repo');
-        //     System.out.println(a[0]);
-        //
-        // }
         
 		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		// sendResponse(CommitStatus.SUCCESS, commitURL);
