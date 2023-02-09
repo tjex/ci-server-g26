@@ -282,6 +282,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
             FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
             fileWriter.write(commitURL + "\n" + build.time + "\n" + build.log);
+            fileWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
