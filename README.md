@@ -100,12 +100,15 @@ The cloned repository is then built and tested:
 
 ## Statement of Contributions
 
+- Arasp Keighobad
+    - help with server configuration and testing
+    - help with debugging
+- Michael Morales Sundstedt
+    - Communication handling from webhook to JSONObject.
+    - Git cloning the branch of which the webhook was pushed from.
+    - Test for both of the above.
 - Tillman Jex
     - raspberry pi server setup
     - webhook setup
     - server response debugging
     - documentation
-- Michael Morales Sundstedt
-    - Communication handling from webhook to JSONObject.
-    - Git cloning the branch of which the webhook was pushed from.
-    - Test for both of the above.
