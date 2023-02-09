@@ -36,7 +36,7 @@ public class HelperFunctionsTest {
 		myWriter.close();
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		JSONObject json = HelperFucntion.getJsonFromRequestReader(br);
-		assertEquals(json.getString("fruit"), "Apple1");
+		assertEquals(json.getString("fruit"), "Apple");
 		assertEquals(json.getString("size"), "Large");
 		assertEquals(json.getString("color"), "Red");
 		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
