@@ -41,15 +41,64 @@ is below:
 
 ```
 
-## Functions Breakdown
+## Program Breakdown
 
-As a first step, the server registers whether a received post request contains the 
-'push' directive from Github. After this, the program clones the repository to `/home/g26/repo`:
-
+To create an endpoint for Github to communicate with, we start a basic HTTP server:
 
 ```java
+	public static void main(String[] args) throws Exception
+	{
+        Server server = new Server(8026);
+        server.setHandler(new ContinuousIntegrationServer());
+        server.start();
+        server.join();
+    }
+```
+Otherwise, the program is esentially contained within two `if` statements and follows the below sequence:
+1. We check if a push event from Github has been received
+2. We try to clone the repository -> exception on fail
+3. We try to build the cloned repository. 
+    - a response is subsequently sent to Github which contains:
+        - a `success` state if the build was successfull
+        - a `fail` if the opposite true
+
+```java 
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
 
+		// Get payload as JSON
+		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
+		boolean buildEval = false;
+		if(pushEvent) {
+			boolean status;
+			try {
+				status = cloneRepository(requestJson);
+				if (status)
+					System.out.println("Successfully cloned repository");
+					System.out.println("Starting build of cloned repo");
+					buildEval = buildRepo();
+			} catch (Exception e) { e.printStackTrace(); }
+		}
+		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
+
+		if(buildEval){
+            System.out.println("successful build eval - true");
+			sendResponse(CommitStatus.SUCCESS, commitURL);
+		}
+		else{
+            System.out.println("successful build eval - false");
+			sendResponse(CommitStatus.FAILURE, commitURL);
+		}
+
+
+```
+
+## Function Deep Dive
+
+Below are the function definitions used above.
+
+### cloneRepository()
+
+```java
 	public boolean cloneRepository(JSONObject payload) throws IOException, InterruptedException {
 		// Gets the relevant info from json file such as clone url and branch
 		JSONObject repo = (JSONObject) payload.get("repository");
@@ -57,9 +106,15 @@ As a first step, the server registers whether a received post request contains t
 		System.out.println("cloningURL: " + cloningURL);
 		String branch = payload.getString("ref");
 		String[] refs = branch.split("/");
-		branch = refs[refs.length - 1];
-		
-		HelperFucntion.gitClone(cloningURL, branch);
+		int counter = 0;
+		branch = "";
+		for (String bra:refs) {
+			if(counter > 1){
+				branch += bra;
+			}
+			counter ++;
+		}
+		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
 		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
@@ -68,34 +123,76 @@ As a first step, the server registers whether a received post request contains t
 
 ```
 
-The cloned repository is then built and tested: 
+### buildRepo()
 
-```java 
-// ../src/main/java/org/group26/ContinuousIntegrationServer.java
+```java
+	public boolean buildRepo() throws IOException, InterruptedException {
+		File file = new File(PATH);
 
-	public String[] build(String pathToRepo) {
-		String[] result = new String[3];
+		System.out.println(file.isDirectory() + " is directory " + file.getName());
 
-		// TODO: Add remaining code
+		ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
+		probbuilder.directory(file);
+		Process pro = probbuilder.start();
+		pro.waitFor();
+		File jarFile = new File(PATH + "target/");
+		System.out.println(jarFile.isDirectory() + " is directory " + jarFile.getName());
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+		String log = "";
+		String line = "";
+		boolean buildBoolean = false;
+		while ((line = bufferedReader.readLine()) != null){
+			System.out.println(line);
+			log += line + "\n";
 
-		result[0] = "FAILED";
-		result[1] = "DATE";
-		result[2] = "LOG";
-		return result;
+			if(line.contains("BUILD") && line.contains("FAILURE")){
+
+				buildBoolean = false;
+			}
+			if(line.contains("BUILD") && line.contains("SUCCESS")){
+				buildBoolean = true;
+			}
+		}
+		return buildBoolean;
 	}
 
-	/**
-	 * 	Attempts to runs all tests
-	 *
-	 * 	@return Array of test statuses?
-	 */
-	public String[] test() {
-		String[] result = new String[1337]; // dummy number
+```
 
-		// TODO: Add remaining code
+### sendResponse()
 
-		return result;
+```java
+	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
+		
+		System.out.println("Sending response to commit url: " + commitUrl);
+		
+		String token = System.getenv("CI_TOKEN");
+		
+		// Get commit id from URL
+		String[] split = commitUrl.split("/");
+		String commitId = split[split.length - 1]; 
+		
+		CloseableHttpClient client = HttpClientBuilder.create().build();
+
+		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/statuses/" + commitId);
+		response.setHeader("Authorization", "Bearer " + token);
+		response.setHeader("Content-type", "application/json");
+		response.setHeader("Accept", "application/vnd.github.v3+json");
+
+		JSONObject body = new JSONObject();
+		body.put("owner", "tjex");
+		body.put("repo", "ci-server-g26");
+		body.put("sha", commitId);
+		body.put("state", status.toString().toLowerCase());
+		StringEntity params = new StringEntity(body.toString());
+		response.setEntity(params);
+
+		System.out.println("Response payload:");
+		System.out.println(body.toString());
+		
+		// Send POST to GitHub	
+		client.execute(response);
 	}
+
 ```
 
 ## Statement of Contributions
