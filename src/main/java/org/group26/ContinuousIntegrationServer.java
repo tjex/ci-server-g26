@@ -176,7 +176,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			body.put("description","The build succeeded!");
 		}
 		else{
-			body.put("description","The build failed!");
+			body.put("description","The build failed! :(");
 		}
 		body.put("context","CI-Server-g26");
 		StringEntity params = new StringEntity(body.toString());
