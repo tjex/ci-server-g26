@@ -55,6 +55,7 @@ public class MainTest
         File file = new File("/home/g26/test_builds/hej.log");
         assertEquals(false,file.isFile());
         server.saveBuildStatus(buildStatus,commitURL,"/home/g26/test_builds/");
+        assert(file.length()>0);
         assertEquals(true,file.isFile());
         file.delete();
     }
