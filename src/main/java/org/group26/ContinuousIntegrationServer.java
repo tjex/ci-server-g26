@@ -47,6 +47,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			HttpServletResponse response)
 					throws IOException, ServletException
 	{
+		File file = new File(PATH);
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+			//Process pro = Runtime.getRuntime().exec("rm -rf " +  PATH);
+		}
 		baseRequest.setHandled(true);
 		
 		// response.getWriter().println("START OF LIFE");
@@ -89,17 +94,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
             System.out.println("successful build eval - false");
 			sendResponse(CommitStatus.FAILURE, commitURL);
 		}
-		Process pro = Runtime.getRuntime().exec("mkdir " +  PATH);
-		try {
-			pro.waitFor();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		File file = new File(PATH);
-		if(file.isDirectory()){
-			FileUtils.deleteDirectory(file);
-			//Process pro = Runtime.getRuntime().exec("rm -rf " +  PATH);
-		}
+
 
 		//System.out.println(target);
 
