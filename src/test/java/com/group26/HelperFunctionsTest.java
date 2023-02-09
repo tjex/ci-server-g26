@@ -56,9 +56,6 @@ public class HelperFunctionsTest {
 		assertFalse(file.isDirectory());
 		HelperFucntion.gitClone(URL, branch, "/home/g26/Test/");
 		assertTrue(file.isDirectory());
-		if(file.isDirectory()){
-			FileUtils.deleteDirectory(file);
-		}
 	}
 
     /**
@@ -80,5 +77,23 @@ public class HelperFunctionsTest {
             FileUtils.deleteDirectory(file);
         }
     }
+
 	*/
+
+    // @Test
+    // public void CheckIfGitCloneWithOutputDirCreatesNewFolder() throws IOException, InterruptedException {
+    //     String branch = "main";
+    //     String URL = "https://github.com/tjex/ci-server-g26.git";
+    //     File file = new File(ContinuousIntegrationServer.PATH);
+    //     if(file.isDirectory()){
+    //         FileUtils.deleteDirectory(file);
+    //     }
+    //     assertFalse(file.isDirectory());
+    //     HelperFucntion.gitCloneWithOutputDir(URL, branch, ContinuousIntegrationServer.PATH);
+    //     assertTrue(file.isDirectory());
+    //     if(file.isDirectory()){
+    //         FileUtils.deleteDirectory(file);
+        // }
+    // }
 }
+

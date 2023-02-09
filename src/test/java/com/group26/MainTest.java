@@ -21,10 +21,10 @@ public class MainTest
      *
      * @param testName name of the test case
 
-    public MainTest(String testName) {
-        super(testName);
-    }
-    */
+    // public MainTest(String testName) {
+    //     super(testName);
+    // }
+
 
     /**
      * @return the suite of tests being tested

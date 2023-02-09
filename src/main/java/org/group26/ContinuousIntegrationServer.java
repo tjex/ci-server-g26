@@ -101,6 +101,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		//String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 		//sendResponse(CommitStatus.SUCCESS, commitURL);
 
+
 		// here you do all the continuous integration tasks
 		// for example
 		// 1st clone your repository
@@ -229,7 +230,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		while ((line = bufferedReader.readLine()) != null){
 			System.out.println(line);
 			log += line + "\n";
+
 			if(line.contains("BUILD") && line.contains("FAILURE")){
+
 				buildBoolean = false;
 			}
 			if(line.contains("BUILD") && line.contains("SUCCESS")){
