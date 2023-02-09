@@ -73,6 +73,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		// Get payload as JSON
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
 		boolean buildEval = false;
+        BuildStatus buildStatus = new BuildStatus();
 		if(pushEvent) {
 			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
@@ -81,12 +82,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				if (status)
 					System.out.println("Successfully cloned repository");
 					System.out.println("Starting build of cloned repo");
-					buildEval = buildRepo();
+					buildStatus = buildRepo();
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
-		if(buildEval){
+		if(buildStatus.success){
             System.out.println("successful build eval - true");
 			sendResponse(CommitStatus.SUCCESS, commitURL);
 		}
@@ -215,7 +216,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     	return result;
     }
 
-	public boolean buildRepo() throws IOException, InterruptedException {
+	public BuildStatus buildRepo() throws IOException, InterruptedException {
 		File file = new File(PATH);
 
 		System.out.println(file.isDirectory() + " is directory " + file.getName());
@@ -242,6 +243,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				buildBoolean = true;
 			}
 		}
-		return buildBoolean;
+        LocalDateTime time = LocalDateTime.now();
+        BuildStatus build = new BuildStatus(buildBoolean,time,log);
+		return build;
 	}
 }
