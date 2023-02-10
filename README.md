@@ -12,7 +12,7 @@
 - [Testing the Server](#testing-the-server)
 - [Building and Testing the Source Code](#building-and-testing-the-source-code)
 - [Statement of Contributions](#statement-of-contributions)
-- [Essence Standard](#essence-standard)
+- [Essence Standard and Review](#essence-standard-and-review)
 
 This repo is the codebase for a continuous integration server.   
 The server acts as an automated build status reporting tool that communicates 
@@ -309,7 +309,7 @@ To build and test the project:
     - automated build process and response aquisition debugging
     - readme documentation
 
-## Essence Standard 
+## Essence Standard and Review 
 
 Our way of working that we developed in the [previous project](https://github.com/tjex/decide-g26) 
 needed to evolve to achieve this project. It was difficult to split the project into atomic tasks 
@@ -319,11 +319,16 @@ multiple people would work on one person's machine to build each component. We f
 faster resolution of bugs and provided good forsight towards general issues with program design.
 
 We decided on a set of tools and became aquainted with them. This related in particular to the chosen server setup, 
-a Raspberry PI 4. As the server needed to be consistently updated and worked on, we assigned some members of the team 
+a the Raspberry PI 4. Despite having University servers available for us to use, we wanted to challenge ourselves in building 
+the server from a fresh headless Linux install. Everything worked very well and we are proud with the outcome as well as having 
+thought creatively about how to approach solving the problem of needing an external server and also having not succumbed to 
+the 'easy-out' of using one of our own local machines with ngrok.
+
+As the server needed to be consistently updated and worked on, we assigned some members of the team 
 to in essence be system admins. This reduced the cognitive load from all as each party had either a responsibility to be 
 focussed on the code generation or the implementation and management of the server. However, due to the fluidity of excellent 
 verbal communication found in this group, all team members were equally able to apply themselves to writing code, debugging and 
-working with the server. 
+working with the server.
 
 We are pleased to report that all members of the team feel they were included and respected equally in the process of both design and implementation, 
 and are equally proud of the solutions developed and the functionality of the end result. 
