@@ -260,6 +260,13 @@ The process was as follows:
         assertTrue(true);
     }
 ```
+
+Output of a filed build:   
+![A failed build](img/build-failure.png)
+
+Output of a successful build:   
+![A successful build](img/build-success.png)
+
 ## Building and Testing the Source Code
 
 Requirements:
