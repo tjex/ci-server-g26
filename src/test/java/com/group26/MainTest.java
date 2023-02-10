@@ -61,7 +61,11 @@ public class MainTest
     }
 
     /**
-     * Tests if a working commit on main is built successful
+     * Tests if a working commit on main is first built successfully
+     * Thereafter a file java class is deleted which should give build errors
+     * The last step is checking out a commit that has failing tests which should also give build errors
+     *
+     * These tests are done in the same function as cloning takes long time on the raspberry pi
      * The specific commit a6c479e2db14d78bf5270701c57697b544c74bba has been tested manually
     **/
     public void testBuildSuccessAndFail() throws IOException, InterruptedException {
@@ -102,5 +106,20 @@ public class MainTest
 
         buildStatus = server.buildRepo(path);
         assertEquals(false, buildStatus.success);
+
+        // 28ba41a9f0cb4fcf50eebc8d9ded11683c24dc4e is a commit that has failing tests
+        try{
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "cd " + path + " && git checkout 28ba41a9f0cb4fcf50eebc8d9ded11683c24dc4e");
+            Process proc = processBuilder.start();
+            proc.waitFor();
+        }
+        catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // the build should fail since the test fails
+        buildStatus = server.buildRepo(path);
+        assertEquals(false, buildStatus.success);
+
     }
 }
