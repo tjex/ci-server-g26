@@ -87,10 +87,10 @@ is below. It simply listens on port 8026 to incoming HTTP requests and routes th
 Apart from the HTTP server, the program is esentially contained within two `if` statements and follows the below sequence:
 1. We check if a push event from Github has been received
 2. We try to clone the repository -> exception on fail
-3. We try to build the cloned repository. 
+3. We try to build the cloned repository which includes compiling and testing. 
     - a response is subsequently sent to Github which contains:
         - a `success` state if the build was successfull
-        - a `fail` if the opposite true
+        - a `fail` if the opposite is true
 4. We send a response back to Github with the result of the build.
 
 ```java 
@@ -200,6 +200,11 @@ build state.
 	}
 
 ```
+The unit-testing of the building process is done through the function testBuildSuccessAndFail in MainTest.
+The function tests for three different scenarios which cover all four combinations of compilation and testing success/failures.
+First, we build a project that compiles and passes all test which should return build successful.
+Thereafter, a java class file in the project is removed which should give compilation errors.
+Finally, we test if we get an error when trying to build a project with failing tests.
 
 ### sendResponse()
 
