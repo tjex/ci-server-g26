@@ -3,6 +3,8 @@
 ## TOC
 
 - [The CI Server](#the-ci-server)
+    - [The Personal Access Token](#the-personal-access-token---very-important!)
+- [HTTP Server](#http-server)
 - [Function Deep Dive](#function-deep-dive)
     - [cloneReposiory()](#cloneRepository)
     - [buildRepo()](#buildRepo)
@@ -11,19 +13,19 @@
 - [Essence Standard](#essence-standard)
 
 This repo is the codebase for a continuous integration server.   
-The server acts as an automated build confirmation tool that communicates 
-with Github on the success / faliure of commited code. The process is as follows:
+The server acts as an automated build status reporting tool that communicates 
+with Github on the functionality of commited code. The process is as follows:
 
 1. code is pushed to Github from a local repo
 2. Github registers the push and sends a json package to the server
 3. the server clones the repo, 
 4. builds the resultant code, 
-5. formats a response destined for Github and
+5. formats a response destined for Github based on the build result and
 6. sends the response (headers and json) back to Github
 
-The response back to Github contains the status of the build: either 
+The response back to Github contains the status of the build, which can either be 
 `error`, `faliure`, `pending` or `success`. This response is displayed 
-alongside the commit in Github giving a visual indicator. 
+alongside the commit in Github.
 
 Through this process developers can work together with greater fluidity due 
 to a shared, automated and established build and test environment.  
@@ -34,9 +36,35 @@ and opportunity to continuously integrate code smoothly into production.
 
 The server itself is a Raspbery PI running ngrok and a simple Java HTTP server.   
 For setting up ngrok refer to their [get started guide](https://ngrok.com/docs/getting-started).   
+For setting up a webhook for your repo, see the [Github docs](https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks).   
+
+### The Personal Access Token - Very Important!
+
+In order for the server's response to be validated by Github, a personal token must be included in the server's response. 
+This allows Github to verify that the response it has received has some form of write access to the repo in question.
+It is this write access that allows the commits to be updated with symbols / descriptions and other actions that you wish 
+to execute on Github based on your server's response.
+
+(At the time of writing) To generate a token, go to your personal Github settings -> Developer.
+
+Once you have your token, add it to your server by running `export CI_TOKEN=<your-token>`.   
+Then in your program, access it with your languages method.   
+In the case of Java: `String token = System.getenv("CI_TOKEN");`
+
+Note: the export variable is only accessible within the shell session in which you run the `export` command. 
+If you exit the session, the variable will be lost.   
+To make it persist, add the same `export` command to your terminals startup config, for example `.bashrc`
+
+```diff
+- WARNING:
+- do not paste your token directly into your server's code. 
+- this is a security risk.
+```
+
+## HTTP Server 
 
 The server process running on the Raspberry PI (that handles receiving / sending http requests) 
-is below: 
+is below. It simply listens on port 8026 to incoming HTTP requests and routes them to our Java program: 
 
 ```java
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
