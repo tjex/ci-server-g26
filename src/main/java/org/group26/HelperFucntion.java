@@ -25,18 +25,21 @@ public class HelperFucntion {
 		return new JSONObject(jsonString);
 	}
 
-	/**
-	 * Takes in a String which comes from getBranchAndGitURL and formats it into a command. This command is then executed
-	 * through Runtime.getRuntime() to clone the repo from webhook branch. Stored at path on the raspberry pi.
-	 * 
-	 * @param cloningURL
-	 * @param branch
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	public static void gitClone(String cloningURL, String branch) throws IOException, InterruptedException {
-		System.out.println("Attempt to clone with command: git clone " + cloningURL + " " + ContinuousIntegrationServer.PATH);
-		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + ContinuousIntegrationServer.PATH);
+    /**
+     * Clones a Git repository to a specified location.
+     *
+     * The repository is cloned with the specified branch and the specified path. The method uses the `git clone` command to clone the repository.
+     *
+     * @param cloningURL the URL of the Git repository to clone
+     * @param branch the branch to clone from the repository
+     * @param path the path where the repository should be cloned to
+     *
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the process is interrupted
+     */
+    public static void gitClone(String cloningURL, String branch, String path) throws IOException, InterruptedException {
+		System.out.println("git clone -b " +  branch + " --single-branch " + cloningURL + " " + path);
+		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + path);
 		pro.waitFor();
 	}
 }

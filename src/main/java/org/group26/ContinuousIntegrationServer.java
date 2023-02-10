@@ -1,21 +1,28 @@
 package org.group26;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDateTime;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.eclipse.jetty.server.Server;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
+
+import org.apache.maven.shared.verifier.Verifier;
+
 
 /**
  *	Skeleton of a ContinuousIntegrationServer which acts as webhook
@@ -24,20 +31,39 @@ import org.json.JSONObject;
 public class ContinuousIntegrationServer extends AbstractHandler
 {
 	public static final String PATH = "/home/g26/repo/";
-	
+    public static final String BUILD_PATH = "/home/g26/build/";
+
 	private enum CommitStatus {
 		ERROR,
 		FAILURE,
 		PENDING,
 		SUCCESS
 	}
-	
+
+	/**
+	 *
+	 * @param target The target of the request - either a URI or a name.
+	 * @param baseRequest The original unwrapped request object.
+	 * @param request The request either as the {@link Request}
+	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
+	 * method can be used access the Request object if required.
+	 * @param response The response as the {@link Response}
+	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
+	 * method can be used access the Response object if required.
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	public void handle(String target,
 			Request baseRequest,
 			HttpServletRequest request,
 			HttpServletResponse response)
 					throws IOException, ServletException
 	{
+		File file = new File(PATH);
+		if(file.isDirectory()){
+			FileUtils.deleteDirectory(file);
+			//Process pro = Runtime.getRuntime().exec("rm -rf " +  PATH);
+		}
 		baseRequest.setHandled(true);
 		
 		// response.getWriter().println("START OF LIFE");
@@ -58,7 +84,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 		// Get payload as JSON
 		JSONObject requestJson = HelperFucntion.getJsonFromRequestReader(request.getReader());
-		
+		boolean buildEval = false;
+        BuildStatus buildStatus = new BuildStatus();
 		if(pushEvent) {
 			// response.getWriter().println("Succesfully found the webhook and about to clone");
 			boolean status;
@@ -66,51 +93,24 @@ public class ContinuousIntegrationServer extends AbstractHandler
 				status = cloneRepository(requestJson);
 				if (status)
 					System.out.println("Successfully cloned repository");
+					System.out.println("Starting build of cloned repo");
+					buildStatus = buildRepo(PATH);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
+		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
 
-		System.out.println(target);
+		if(buildStatus.success){
+            System.out.println("successful build eval - true");
+			sendResponse(CommitStatus.SUCCESS, commitURL, buildStatus);
+		}
+		else{
+            System.out.println("successful build eval - false");
+			sendResponse(CommitStatus.FAILURE, commitURL, buildStatus);
+		}
 
-		// String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-		// sendResponse(CommitStatus.SUCCESS, commitURL);
 
-		// here you do all the continuous integration tasks
-		// for example
-		// 1st clone your repository
-		// 2nd compile the code
-
-		// response.getWriter().println("end of function");
-
-		// response.getWriter().println("CI job done");
-	}
-	
-	/**
-	 * 	Attempts to build the application.
-	 *
-	 * 	@param pathToRepo Project which is going to be built.
-	 */
-	public String[] build(String pathToRepo) {
-		String[] result = new String[3];
-
-		// TODO: Add remaining code
-
-		result[0] = "FAILED";
-		result[1] = "DATE";
-		result[2] = "LOG";
-		return result;
-	}
-
-	/**
-	 * 	Attempts to runs all tests
-	 *
-	 * 	@return Array of test statuses?
-	 */
-	public String[] test() {
-		String[] result = new String[1337]; // dummy number
-
-		// TODO: Add remaining code
-
-		return result;
+        saveBuildStatus(buildStatus,commitURL,BUILD_PATH);
+		 System.out.println("CI job done");
 	}
 
 	/**
@@ -127,9 +127,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		System.out.println("cloningURL: " + cloningURL);
 		String branch = payload.getString("ref");
 		String[] refs = branch.split("/");
-		branch = refs[refs.length - 1];
-		
-		HelperFucntion.gitClone(cloningURL, branch);
+		int counter = 0;
+		branch = "";
+		for (String bra:refs) {
+			if(counter > 1){
+				branch += bra + "/";
+			}
+			counter ++;
+		}
+		branch = branch.substring(0, branch.length() - 1);
+		System.out.println(branch);
+		HelperFucntion.gitClone(cloningURL, branch, ContinuousIntegrationServer.PATH);
 		
 		// Returns true if repository was successfully cloned
 		File file = new File(ContinuousIntegrationServer.PATH + "ci-server-g26/");
@@ -139,7 +147,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	/**
 	 * 	Sends response back to GitHub.
 	 *
-	 *	@param response
 	 * 	@param status Commit status (error, failure, pending, success)
 	 * 	@param commitUrl The pushed commit URL
 	 * 	@throws IOException 
@@ -147,7 +154,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 * 
 	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl, BuildStatus buildStatus) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
@@ -169,6 +176,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		body.put("repo", "ci-server-g26");
 		body.put("sha", commitId);
 		body.put("state", status.toString().toLowerCase());
+		if(buildStatus.success){
+			body.put("description","The build succeeded!");
+		}
+		else{
+			body.put("description","The build failed! :(");
+		}
+		body.put("context","CI-Server-g26");
 		StringEntity params = new StringEntity(body.toString());
 		response.setEntity(params);
 
@@ -179,12 +193,87 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		client.execute(response);
 	}
 
-	// used to start the CI server in command line
+
+
+	/**
+	 *  Used to start the CI server in command line
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception
 	{
-		Server server = new Server(8026);
-		server.setHandler(new ContinuousIntegrationServer());
-		server.start();
-		server.join();
+        Server server = new Server(8026);
+        server.setHandler(new ContinuousIntegrationServer());
+        server.start();
+        server.join();
+    }
+
+	/**
+	 * Builds the cloned down repo from git push branch and evaluates if it's a success or not
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public BuildStatus buildRepo(String path) throws IOException, InterruptedException {
+		File file = new File(path);
+		System.out.println(file.isDirectory() + " is directory " + file.getName());
+
+		ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});
+		probbuilder.directory(file);
+		Process pro = probbuilder.start();
+		pro.waitFor();
+		File jarFile = new File(path + "target/");
+		System.out.println(jarFile.isDirectory() + " is directory " + jarFile.getName());
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+		String log = "";
+		String line = "";
+		boolean buildBoolean = false;
+		while ((line = bufferedReader.readLine()) != null){
+			System.out.println(line);
+			log += line + "\n";
+
+			if(line.contains("BUILD") && line.contains("FAILURE")){
+
+				buildBoolean = false;
+			}
+			if(line.contains("BUILD") && line.contains("SUCCESS")){
+				buildBoolean = true;
+			}
+		}
+        LocalDateTime time = LocalDateTime.now();
+        BuildStatus build = new BuildStatus(buildBoolean,time,log);
+		return build;
 	}
+
+    /**
+     * Saves the build status to a file.
+     *
+     * The file is created using the commit ID extracted from the commit URL and a given path.
+     * If the file already exists, it is overwritten.
+     * The file contains the commit URL, the build time, and the build log.
+     *
+     * @param build the build status to be saved
+     * @param commitURL the URL of the commit
+     * @param path the path where the file should be saved
+     */
+    public void saveBuildStatus(BuildStatus build, String commitURL ,String path){
+        String[] split = commitURL.split("/");
+        String commitId = split[split.length - 1];
+        File file = new File(path + commitId + ".log");
+        //Creating a folder using mkdir() method
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+            fileWriter.write(commitURL + "\n" + build.time + "\n" + build.log);
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 }

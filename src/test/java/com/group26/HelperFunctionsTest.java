@@ -24,6 +24,8 @@ public class HelperFunctionsTest {
 
 	/**
 	 *	Test if a JSONObject is created through the function {@code getJsonFromConnection} and contains appropriate repo.
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void CheckCorrectJsonReader() throws IOException, InterruptedException {
@@ -41,25 +43,31 @@ public class HelperFunctionsTest {
 		assertEquals(json.getString("color"), "Red");
 		pro = Runtime.getRuntime().exec("rm /home/g26/temp.txt");
 		pro.waitFor();
+		file.delete();
 	}
 
 	/**
 	 * 	First check if there exist a directory ci-server-g26/ we should assert false.
 	 * 	Second check if there exist a directory ci-server-g26/ after using gitClone function, which should assert true.
+	 * 	@throws IOException
+	 * 	@throws InterruptedException
 	 */
+
+
 	@Test
 	public void CheckIfGitCloneCreatesNewFolder() throws IOException, InterruptedException {
 		String branch = "main";
 		String URL = "https://github.com/tjex/ci-server-g26.git";
-		File file = new File(ContinuousIntegrationServer.PATH);
+		File file = new File("/home/g26/Test/");
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
 		assertFalse(file.isDirectory());
-		HelperFucntion.gitClone(URL, branch);
+		HelperFucntion.gitClone(URL, branch, "/home/g26/Test/");
 		assertTrue(file.isDirectory());
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
 		}
 	}
 }
+
