@@ -309,7 +309,12 @@ To build and test the project:
     - automated build process and response aquisition debugging
     - readme documentation
 
-## Essence Standard and Review 
+Despite having University servers available for us to use, we wanted to challenge ourselves in building 
+the server from a fresh headless Linux install. This worked really well and through the process we feel that 
+we contributed valuably not only to our own understanding of networking, linux and CI servers, but also to future 
+projects by further supporting the value of the Raspberry PI as a useful tool in the software engineers toolbox.
+
+## Essence Standard
 
 Our way of working that we developed in the [previous project](https://github.com/tjex/decide-g26) 
 needed to evolve to achieve this project. It was difficult to split the project into atomic tasks 
@@ -319,11 +324,6 @@ multiple people would work on one person's machine to build each component. We f
 faster resolution of bugs and provided good forsight towards general issues with program design.
 
 We decided on a set of tools and became aquainted with them. This related in particular to the chosen server setup, 
-a the Raspberry PI 4. Despite having University servers available for us to use, we wanted to challenge ourselves in building 
-the server from a fresh headless Linux install. Everything worked very well and we are proud with the outcome as well as having 
-thought creatively about how to approach solving the problem of needing an external server and also having not succumbed to 
-the 'easy-out' of using one of our own local machines with ngrok.
-
 As the server needed to be consistently updated and worked on, we assigned some members of the team 
 to in essence be system admins. This reduced the cognitive load from all as each party had either a responsibility to be 
 focussed on the code generation or the implementation and management of the server. However, due to the fluidity of excellent 
