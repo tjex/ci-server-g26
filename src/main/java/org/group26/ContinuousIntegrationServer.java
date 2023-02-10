@@ -1,36 +1,40 @@
 package org.group26;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.shared.verifier.VerificationException;
-import org.eclipse.jetty.server.Server;
-
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.JSONObject;
 
-import org.apache.maven.shared.verifier.Verifier;
-
-
 /**
- *	Skeleton of a ContinuousIntegrationServer which acts as webhook
+ *	Skeleton of a ContinuousIntegrationServer which acts as webhook.
+ *
  *	See the Jetty documentation for API documentation of those classes.
  */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
+	/**
+	 * 	Path on server where the repository will be cloned to.
+	 */
 	public static final String PATH = "/home/g26/repo/";
+	
+	/**
+	 * 	Path on server to build files.
+	 */
     public static final String BUILD_PATH = "/home/g26/build/";
 
 	private enum CommitStatus {
@@ -39,26 +43,16 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		PENDING,
 		SUCCESS
 	}
-
+	
 	/**
-	 *
-	 * @param target The target of the request - either a URI or a name.
-	 * @param baseRequest The original unwrapped request object.
-	 * @param request The request either as the {@link Request}
-	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
-	 * method can be used access the Request object if required.
-	 * @param response The response as the {@link Response}
-	 * object or a wrapper of that request. The {@link HttpConnection#getCurrentConnection()}
-	 * method can be used access the Response object if required.
-	 * @throws IOException
-	 * @throws ServletException
+	 * 	{@inheritDoc}
 	 */
-	public void handle(String target,
-			Request baseRequest,
-			HttpServletRequest request,
-			HttpServletResponse response)
-					throws IOException, ServletException
-	{
+	public void handle(
+			String target, 
+			Request baseRequest, 
+			HttpServletRequest request, 
+			HttpServletResponse response) throws IOException {
+		
 		File file = new File(PATH);
 		if(file.isDirectory()){
 			FileUtils.deleteDirectory(file);
@@ -108,17 +102,19 @@ public class ContinuousIntegrationServer extends AbstractHandler
 			sendResponse(CommitStatus.FAILURE, commitURL, buildStatus);
 		}
 
-
         saveBuildStatus(buildStatus,commitURL,BUILD_PATH);
-		 System.out.println("CI job done");
+        System.out.println("CI job done");
 	}
 
 	/**
 	 * 	Clones the repository into folder: {@code ContinuousIntegrationServer.PATH}/ci-server-g26/
 	 *
 	 * 	@param payload JSON payload from GitHub web hook
+	 * 
 	 * 	@throws IOException If an I/O error occurs 
-	 * 	@throws InterruptedException 
+	 * 	@throws InterruptedException If the process is interrupted
+	 * 
+	 * 	@return true if repository was successfully cloned.
 	 */
 	public boolean cloneRepository(JSONObject payload) throws IOException, InterruptedException {
 		// Gets the relevant info from json file such as clone url and branch
@@ -149,10 +145,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 *
 	 * 	@param status Commit status (error, failure, pending, success)
 	 * 	@param commitUrl The pushed commit URL
-	 * 	@throws IOException 
-	 * 	@throws ClientProtocolException
+	 * 	@param buildStatus The result of building this commit
 	 * 
-	 *  @see https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28
+	 * 	@throws IOException If HTTP client can't send response
+	 * 
+	 *  @see <a href="https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28">GitHub status docs</a>
 	 */
 	public void sendResponse(CommitStatus status, String commitUrl, BuildStatus buildStatus) throws IOException {
 		
@@ -193,15 +190,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		client.execute(response);
 	}
 
-
-
 	/**
-	 *  Used to start the CI server in command line
-	 * @param args
-	 * @throws Exception
+	 * 	Starts the server on port 8026
+	 * 
+	 * 	@param args No command line arguments needed.
+	 * 	@throws Exception If an error occurs
 	 */
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception {
         Server server = new Server(8026);
         server.setHandler(new ContinuousIntegrationServer());
         server.start();
@@ -210,9 +205,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
 	/**
 	 * Builds the cloned down repo from git push branch and evaluates if it's a success or not
-	 * @return
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * 
+	 * @param path File path to repository
+	 * 
+	 * @return A {@link org.group26.BuildStatus} object containing information about the build.
+	 * 
+	 * @throws IOException If an I/O error occurs.
+	 * @throws InterruptedException If build command fails.
 	 */
 	public BuildStatus buildRepo(String path) throws IOException, InterruptedException {
 		File file = new File(path);
