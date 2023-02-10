@@ -12,7 +12,7 @@
 - [Testing the Server](#testing-the-server)
 - [Building and Testing the Source Code](#building-and-testing-the-source-code)
 - [Statement of Contributions](#statement-of-contributions)
-- [Essence Standard and Review](#essence-standard-and-review)
+- [Essence Standard](#essence-standard)
 
 This repo is the codebase for a continuous integration server.   
 The server acts as an automated build status reporting tool that communicates 
