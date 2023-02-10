@@ -9,6 +9,7 @@
     - [cloneReposiory()](#cloneRepository)
     - [buildRepo()](#buildRepo)
     - [sendResponse()](#sendResponse)
+- [Building](#building)
 - [Statement of Contributions](#statement-of-contributions)
 - [Essence Standard](#essence-standard)
 
@@ -240,6 +241,20 @@ Below are the function definitions used above.
 	}
 
 ```
+
+## Building 
+
+Requirements:
+
+- Java 11 or higher.
+- Maven
+
+To build the project: 
+
+1. `git clone https://github.com/tjex/ci-server-g26.git`
+2. `cd ci-server-g26`
+3. `mvn compile`
+4. `mvn exec:java -Dexec.mainClass=org.group26.ContinuousIntegrationServer`
 
 ## Statement of Contributions
 
