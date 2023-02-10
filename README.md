@@ -3,7 +3,7 @@
 ## TOC
 
 - [The CI Server](#the-ci-server)
-    - [The Personal Access Token](#the-personal-access-token---very-important!)
+    - [The Personal Access Token](#the-personal-access-token---very-important)
 - [HTTP Server](#http-server)
 - [Function Deep Dive](#function-deep-dive)
     - [cloneReposiory()](#cloneRepository)
@@ -261,7 +261,7 @@ The process was as follows:
     }
 ```
 
-Output of a filed build:   
+Output of a failed build:   
 ![A failed build](img/build-failure.png)
 
 Output of a successful build:   
