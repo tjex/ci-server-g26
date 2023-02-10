@@ -215,6 +215,11 @@ Below are the function definitions used above.
 
 ## Statement of Contributions
 
+- Anders Blomqvist
+    - java docs documentation
+    - helped with git clone function
+    - implementation of server communication back to Github
+    - assistance with project setup
 - Arasp Keighobad
     - help with server configuration and testing
     - help with debugging
