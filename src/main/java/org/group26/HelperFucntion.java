@@ -52,4 +52,19 @@ public class HelperFucntion {
 		Process pro = Runtime.getRuntime().exec("git clone -b " +  branch + " --single-branch " + cloningURL + " " + path);
 		pro.waitFor();
 	}
+    
+    
+    /**
+     * 	Formats the status URL to a complete URL we can send a response to.
+     * 
+     * 	@param commitID SHA for commit.
+     * 	@param statusURL API URL to GitHub statuses
+     * 	@return URL to GitHib commit status.
+     */
+    public static String getStatusURL(String commitID, String statusURL) {
+    	// "statuses_url": 	"https://api.github.com/repos/tjex/ci-server-g26/statuses/{sha}",
+    	// commitID: 		7a5ec3ef...
+    	// formatted: 		https://api.github.com/repos/tjex/ci-server-g26/statuses/7a5ec3ef...
+    	return statusURL.replace("{sha}", commitID);
+    }
 }
