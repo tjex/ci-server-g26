@@ -6,14 +6,24 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
+/**
+ * 	General functions to help server.
+ * 
+ * 	@author andersblomqvist
+ * 	@author a-kbd
+ * 	@author coffecup25
+ * 	@author darpos
+ * 	@author tjex
+ */
 public class HelperFucntion {
 
 	/**
 	 *	Reads the connection response and returns it as an JSON object.
 	 * 
-	 * 	@param reader
+	 * 	@param reader Buffered reader from response object.
 	 * 	@return JSONObject with response from connection.
-	 * 	@throws IOException
+	 * 
+	 * 	@throws IOException If an I/O error occurs.
 	 */
 	public static JSONObject getJsonFromRequestReader(BufferedReader reader) throws IOException {
 		String inputline;
