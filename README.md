@@ -251,10 +251,16 @@ Below are the function definitions used above.
 - Arasp Keighobad
     - help with server configuration and testing
     - help with debugging
+- Arian Hanifi
+    - initial build function development (later finalised Michael)
+    - project structure assistance
+    - build logging
+    - debugging
 - Michael Morales Sundstedt
-    - Communication handling from webhook to JSONObject.
-    - Git cloning the branch of which the webhook was pushed from.
-    - Test for both of the above.
+    - communication handling from webhook to JSONObject
+    - git cloning the branch of which the webhook was pushed from
+    - test for both of the above
+    - completion of build funcion
 - Tillman Jex
     - raspberry pi server setup and management
     - webhook setup
