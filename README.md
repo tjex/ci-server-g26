@@ -9,7 +9,8 @@
     - [cloneReposiory()](#cloneRepository)
     - [buildRepo()](#buildRepo)
     - [sendResponse()](#sendResponse)
-- [Building](#building)
+- [Testing the Server](#testing-the-server)
+- [Building and Testing the Source Code](#building-and-testing-the-source-code)
 - [Statement of Contributions](#statement-of-contributions)
 - [Essence Standard](#essence-standard)
 
@@ -24,8 +25,8 @@ with Github on the functionality of commited code. The process is as follows:
 5. formats a response destined for Github based on the build result and
 6. sends the response (headers and json) back to Github
 
-The response back to Github contains the status of the build, which can either be 
-`error`, `faliure`, `pending` or `success`. This response is displayed 
+The response back to Github contains the status of the build. Github accepts 
+`error`, `faliure`, `pending` or `success` state messages. This response is displayed 
 alongside the commit in Github.
 
 Through this process developers can work together with greater fluidity due 
@@ -38,6 +39,8 @@ and opportunity to continuously integrate code smoothly into production.
 The server itself is a Raspbery PI running ngrok and a simple Java HTTP server.   
 For setting up ngrok refer to their [get started guide](https://ngrok.com/docs/getting-started).   
 For setting up a webhook for your repo, see the [Github docs](https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks).   
+
+The usage of ngrok means you can use any machine as a continuous integration server, including your own local machine.
 
 ### The Personal Access Token - Very Important!
 
@@ -77,31 +80,18 @@ is below. It simply listens on port 8026 to incoming HTTP requests and routes th
 		server.start();
 		server.join();
 	}
-
 ```
 
 ## Program Breakdown
 
-To create an endpoint for Github to communicate with, we start a basic HTTP server:
-
-```java
-// ../src/main/java/org/group26/ContinuousIntegrationServer.java
-
-	public static void main(String[] args) throws Exception
-	{
-        Server server = new Server(8026);
-        server.setHandler(new ContinuousIntegrationServer());
-        server.start();
-        server.join();
-    }
-```
-Otherwise, the program is esentially contained within two `if` statements and follows the below sequence:
+Apart from the HTTP server, the program is esentially contained within two `if` statements and follows the below sequence:
 1. We check if a push event from Github has been received
 2. We try to clone the repository -> exception on fail
 3. We try to build the cloned repository. 
     - a response is subsequently sent to Github which contains:
         - a `success` state if the build was successfull
         - a `fail` if the opposite true
+4. We send a response back to Github with the result of the build.
 
 ```java 
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
@@ -139,6 +129,8 @@ Below are the function definitions used above.
 
 ### cloneRepository()
 
+Here we receive a json payload from the Github webhook and clone the repository.
+
 ```java
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
 
@@ -167,6 +159,12 @@ Below are the function definitions used above.
 ```
 
 ### buildRepo()
+
+Here in the buildRepo() function we build and test the cloned repository.   
+ie `ProcessBuilder probbuilder = new ProcessBuilder(new String[]{"mvn","package"});`
+
+With this process we receive a log output from which we can see the test results and 
+build state.  
 
 ```java
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
@@ -205,6 +203,8 @@ Below are the function definitions used above.
 
 ### sendResponse()
 
+After the build is done, a response is formatted to be sent to Github.
+
 ```java
 // ../src/main/java/org/group26/ContinuousIntegrationServer.java
 
@@ -241,20 +241,39 @@ Below are the function definitions used above.
 	}
 
 ```
+## Testing the Server
 
-## Building 
+In order to test the CI server process we had an 'assessment' branch, on which commits would be pushed 
+that were expected to result in a build success of failure. 
+
+The process was as follows:
+
+1. cd into repo root.
+2. `git checkout assessment` and either,
+    - make a minor non breaking change, commit and push = successful build
+    - break the code (eg, see below), commit and push = failed build
+
+```java
+//../src/test/java/com/group26/MainTest.java
+    public void testApp() {
+        // change 'true' to 'false' = build fail
+        assertTrue(true);
+    }
+```
+## Building and Testing the Source Code
 
 Requirements:
 
 - Java 11 or higher.
 - Maven
 
-To build the project: 
+To build and test the project: 
 
 1. `git clone https://github.com/tjex/ci-server-g26.git`
 2. `cd ci-server-g26`
-3. `mvn compile`
-4. `mvn exec:java -Dexec.mainClass=org.group26.ContinuousIntegrationServer`
+3. `mvn test`
+4. `mvn compile`
+5. `mvn exec:java -Dexec.mainClass=org.group26.ContinuousIntegrationServer`
 
 ## Statement of Contributions
 
