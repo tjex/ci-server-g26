@@ -91,15 +91,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
 					buildStatus = buildRepo(PATH);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
+		
 		String commitURL = requestJson.getJSONObject("head_commit").getString("url");
-
+		String statusURL = requestJson.getJSONObject("repository").getString("statuses_url");
+		
 		if(buildStatus.success){
             System.out.println("successful build eval - true");
-			sendResponse(CommitStatus.SUCCESS, commitURL, buildStatus);
+			sendResponse(CommitStatus.SUCCESS, commitURL, statusURL, buildStatus);
 		}
 		else{
             System.out.println("successful build eval - false");
-			sendResponse(CommitStatus.FAILURE, commitURL, buildStatus);
+			sendResponse(CommitStatus.FAILURE, commitURL, statusURL, buildStatus);
 		}
 
         saveBuildStatus(buildStatus,commitURL,BUILD_PATH);
@@ -145,13 +147,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
 	 *
 	 * 	@param status Commit status (error, failure, pending, success)
 	 * 	@param commitUrl The pushed commit URL
+	 * 	@param statusURL The GitHub API URL to commit statuses 
 	 * 	@param buildStatus The result of building this commit
 	 * 
 	 * 	@throws IOException If HTTP client can't send response
 	 * 
 	 *  @see <a href="https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28">GitHub status docs</a>
 	 */
-	public void sendResponse(CommitStatus status, String commitUrl, BuildStatus buildStatus) throws IOException {
+	public void sendResponse(CommitStatus status, String commitUrl, String statusURL, BuildStatus buildStatus) throws IOException {
 		
 		System.out.println("Sending response to commit url: " + commitUrl);
 		
@@ -160,10 +163,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 		// Get commit id from URL
 		String[] split = commitUrl.split("/");
 		String commitId = split[split.length - 1]; 
+
+		// Get status URL
+		String commitStatusURL = HelperFucntion.getStatusURL(commitId, statusURL);
 		
 		CloseableHttpClient client = HttpClientBuilder.create().build();
 
-		HttpPost response = new HttpPost("https://api.github.com/repos/tjex/ci-server-g26/statuses/" + commitId);
+		HttpPost response = new HttpPost(commitStatusURL);
 		response.setHeader("Authorization", "Bearer " + token);
 		response.setHeader("Content-type", "application/json");
 		response.setHeader("Accept", "application/vnd.github.v3+json");

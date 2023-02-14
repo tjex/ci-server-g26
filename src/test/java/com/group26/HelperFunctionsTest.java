@@ -69,5 +69,17 @@ public class HelperFunctionsTest {
 			FileUtils.deleteDirectory(file);
 		}
 	}
+	
+	/**
+	 * 	Checks if the correct status URL is returned by combining statuses URL from GitHub API
+	 * 	with a commitID.
+	 */
+	@Test
+	public void CheckCorrectStatusURL() {
+		String statuses = "https://api.github.com/repos/tjex/ci-server-g26/statuses/{sha}";
+		String commitID = "1d6c375756c98e76ce22cf145feedeaf002cc97d";
+		String url = HelperFucntion.getStatusURL(commitID, statuses);
+		assertEquals("https://api.github.com/repos/tjex/ci-server-g26/statuses/1d6c375756c98e76ce22cf145feedeaf002cc97d", url);
+	}
 }
 
